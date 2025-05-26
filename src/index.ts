@@ -11,6 +11,7 @@ import { handleFunctionCall } from "./wanda/event-handlers/handleFunctionCall";
 import { createIntroAssistant } from "./wanda/assistants/IntroAssistant";
 import { createSearchAssistant } from "./wanda/assistants/SearchAssistant";
 import { createProfileAssistant } from "./wanda/assistants/ProfileAssistant";
+import { Vapi } from "@vapi-ai/server-sdk";
 
 // Create Express application
 const app = express();
@@ -93,7 +94,7 @@ app.post("/wanda", async (req, res) => {
     }
     console.log("VAPI_API_KEY validated");
 
-    const members: Assistant[] = [
+    const members: Vapi.SquadMemberDto[] = [
       createIntroAssistant(model, variableValues, modelProvider),
       createSearchAssistant(model, variableValues, modelProvider),
       createProfileAssistant(model, variableValues, modelProvider),
@@ -131,10 +132,8 @@ app.post("/wanda", async (req, res) => {
             "end-of-call-report",
             "hang",
           ],
+          server: { url: `https://${req.headers.host}/events` },
         },
-      },
-      assistantOverrides: {
-        server: { url: `https://${req.headers.host}/events` },
       },
     };
     console.log("Sending response to Vapi:", responseBody);
@@ -184,7 +183,7 @@ app.post("/wanda-twilio", async (req, res) => {
   try {
     const modelProvider: "google" | "openai" = "openai";
     const model: "gemini-2.0-flash" | "gpt-4o-2024-11-20" = "gpt-4o-2024-11-20";
-    console.log("Request body:", req.body); // Log request body
+    console.log("Request body:", req.body);
 
     // Validate API key
     const apiKey = process.env.VAPI_API_KEY;
@@ -195,7 +194,7 @@ app.post("/wanda-twilio", async (req, res) => {
     }
     console.log("VAPI_API_KEY validated");
 
-    const members: Assistant[] = [
+    const members: Vapi.SquadMemberDto[] = [
       createIntroAssistant(model, variableValues, modelProvider),
       createSearchAssistant(model, variableValues, modelProvider),
       createProfileAssistant(model, variableValues, modelProvider),

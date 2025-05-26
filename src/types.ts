@@ -127,7 +127,11 @@ interface ModelOverride {
   temperature: number;
   provider: string; // Could potentially be a literal type like 'openai' if known
   tools?: VapiTool[]; // Optional: Seen in the second member
-  knowledgeBase?: KnowledgeBase; // Optional: Seen in the second member
+  knowledgeBase?: KnowledgeBase; // Optional: Seen in the second
+  messages?: {
+    role: "system" | "user" | "assistant" | "tool" | "function";
+    content: string;
+  }[];
 }
 
 /**
@@ -220,6 +224,19 @@ interface AssistantDestination {
  * Represents a single member within the 'squad.members' array.
  */
 export interface Assistant {
+  assistant?: {
+    name?: string; // e.g., "Wanda_Intro"
+    model?: ModelOverride; // Model configuration
+    voice?: {
+      voiceId: string; // e.g., "emma"
+      provider: string; // e.g., "azure"
+    };
+    transcriber?: {
+      provider: string; // e.g., "deepgram"
+    };
+    firstMessage?: string; // Optional: Initial message from the assistant
+    firstMessageMode?: string; // Optional: Mode for the first message, e.g., "assistant-speaks-first"
+  };
   assistantId: string; // UUID format
   assistantOverrides: AssistantOverrides;
   assistantDestinations: AssistantDestination[];
