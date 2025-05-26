@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-/* const { privateKey } = JSON.parse(process.env.FIREBASE_PRIVATE_KEY!);
+const { privateKey } = JSON.parse(process.env.FIREBASE_PRIVATE_KEY!);
 
 initializeApp({
   credential: cert({
@@ -12,9 +12,9 @@ initializeApp({
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
     privateKey: privateKey,
   }),
-}); */
+}); 
 
-const firebaseConfig = {
+/* const firebaseConfig = {
   apiKey: "AIzaSyCZ0gc2lqqW5iQ_lYG-fWbmJPUr8z9zWt8",
   authDomain: "wanda-74cc9.firebaseapp.com",
   projectId: "wanda-74cc9",
@@ -22,7 +22,7 @@ const firebaseConfig = {
   messagingSenderId: "619111313715",
   appId: "1:619111313715:web:e36dd199a5ce2df6610e46",
   measurementId: "G-X16PYMLPFB",
-};
+}; */
 
 const app = initializeApp(firebaseConfig);
 
@@ -60,20 +60,25 @@ export async function loadCaller({
 }: {
   phoneNumber: number;
 }): Promise<any> {
-  const callerRef = db.collection("callers").doc(String(phoneNumber));
-  const callerDoc = await callerRef.get();
+  try {
+    const callerRef = db.collection("callers").doc(String(phoneNumber));
+    const callerDoc = await callerRef.get();
 
-  if (callerDoc.exists) {
-    return callerDoc.data();
-  } else {
-    // Create a new caller document if it doesn't exist
-    const caller = await callerRef.set({
-      phoneNumber: phoneNumber,
-      createdAt: new Date().toISOString(),
-    });
+    if (callerDoc.exists) {
+      return callerDoc.data();
+    } else {
+      // Create a new caller document if it doesn't exist
+      const caller = await callerRef.set({
+        phoneNumber: phoneNumber,
+        createdAt: new Date().toISOString(),
+      });
 
-    console.log("Created new caller:", caller);
+      console.log("Created new caller:", caller);
 
-    return caller;
+      return caller;
+    }
+  } catch (error) {
+    console.error("Error loading caller:", error);
+    throw error;
   }
 }

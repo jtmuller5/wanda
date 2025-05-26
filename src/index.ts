@@ -1,10 +1,9 @@
 import express, { Request, Response } from "express";
-import "dotenv/config"; // Load environment variables
-import { CallRequest, Assistant } from "./types";
+import "dotenv/config";
+import { TwilioCallRequest, Assistant, VapiCallRequest } from "./types";
 import { WandaVariableValues } from "./wanda/config";
 import { db, loadCaller } from "./services/firebase";
-import { SearchTransfer } from "./wanda/transfers/SearchTransfer";
-import { ProfileTransfer } from "./wanda/transfers/ProfileTransfer";
+import ngrok from "ngrok";
 import { handleHang } from "./wanda/event-handlers/handleHang";
 import { handleEndOfCallReport } from "./wanda/event-handlers/handleEndOfCallReport";
 import { handleStatusUpdate } from "./wanda/event-handlers/handleStatusUpdate";
@@ -31,28 +30,47 @@ app.get("/health", (req: Request, res: Response) => {
   res.status(200).send("OK");
 });
 
+const PORT = parseInt(process.env.PORT || "3000", 10);
+
 // Start the server
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
+
+  // Set up ngrok
+  if (process.env.LOCAL?.toString().toLowerCase() === "true") {
+    try {
+      const url = await ngrok.connect({
+        addr: PORT,
+        subdomain: process.env.NGROK_SUBDOMAIN,
+      });
+      console.log(`Wanda URL: ${url}/wanda`);
+    } catch (error) {
+      console.error("Error setting up ngrok:", error);
+    }
+  }
 });
 
+/*
+{"message":{"timestamp":1748289798737,"type":"assistant-request","call":{"id":"f8736ebe-7919-43ec-8637-21991535aab4","orgId":"5b050d60-506b-45c4-b175-76d7d6cc404f","createdAt":"2025-05-26T20:03:18.712Z","updatedAt":"2025-05-26T20:03:18.712Z","type":"inboundPhoneCall","status":"ringing","phoneCallProvider":"vapi","phoneCallProviderId":"48cfae15-639e-46ee-a2ee-d2513db65c18","phoneCallTransport":"sip","phoneNumberId":"0eac8823-cc7f-4e85-8d05-dee356a4522f","assistantId":null,"assistantOverrides":{"variableValues":{"account-sid":"c033b672-5b99-42ae-9ce2-b231e9a522fb","cid":"2361682961-3957278598-1683713742@msc1.382COM.COM","forwarded-for":"64.125.111.10","originating-carrier":"382com","voip-carrier-sid":"a5569621-84ac-49cc-a8b8-11c7fb96b905","application-sid":"79d078c8-76b2-452a-99e0-ddd5abbf6269"}},"squadId":null,"workflowId":null,"customer":{"number":"+13152716606","sipUri":"sip:+13152716606@44.229.228.186:5060"},"phoneCallProviderDetails":{"sbcCallId":"2361682961-3957278598-1683713742@msc1.382COM.COM"},"transport":{"provider":"vapi.sip","sbcCallSid":"2361682961-3957278598-1683713742@msc1.382COM.COM","callSid":"48cfae15-639e-46ee-a2ee-d2513db65c18"}},"phoneNumber":{"id":"0eac8823-cc7f-4e85-8d05-dee356a4522f","orgId":"5b050d60-506b-45c4-b175-76d7d6cc404f","assistantId":null,"number":"+18436489138","createdAt":"2025-05-26T19:04:15.042Z","updatedAt":"2025-05-26T20:03:12.364Z","stripeSubscriptionId":null,"twilioAccountSid":null,"twilioAuthToken":null,"stripeSubscriptionStatus":null,"stripeSubscriptionCurrentPeriodStart":null,"name":"Wanda Staging","credentialId":null,"serverUrl":null,"serverUrlSecret":null,"twilioOutgoingCallerId":null,"sipUri":null,"provider":"vapi","fallbackForwardingPhoneNumber":null,"fallbackDestination":null,"squadId":null,"credentialIds":null,"numberE164CheckEnabled":null,"authentication":null,"server":{"url":"https://b53f-2601-140-8f00-4ba0-1de5-57f2-1a04-4268.ngrok-free.app/wanda"},"useClusterSip":null,"status":"active","providerResourceId":"787d5a52-98dc-45de-947f-98462237e341","hooks":null,"twilioApiKey":null,"twilioApiSecret":null,"smsEnabled":true,"workflowId":null},"customer":{"number":"+13152716606","sipUri":"sip:+13152716606@44.229.228.186:5060"}}}
+*/
 app.post("/wanda", async (req, res) => {
   console.log("Received POST request on /wanda"); // Log start
   console.log("Received voice call:", JSON.stringify(req.body));
 
-  const { From, CallSid } = req.body as CallRequest;
+  const { message } = req.body as VapiCallRequest;
 
   // const locationId = req.query.locationId as string;
   // const overflow = Boolean(req.query.overflow);
 
   const caller = await loadCaller({
-    phoneNumber: Number(From.replace("+1", "")),
+    phoneNumber: Number(message.customer.number.replace("+1", "")),
   });
 
-  await db.collection("calls").doc(CallSid).set(
+  const callId = message.call.id;
+  await db.collection("calls").doc(callId).set(
     {
-      id: CallSid,
-      callerPhoneNumber: From,
+      id: callId,
+      callerPhoneNumber: message.customer.number,
       createdAt: new Date().toISOString(),
       callStart: new Date().toISOString(),
       recordingUrl: null,
@@ -98,7 +116,7 @@ app.post("/wanda", async (req, res) => {
       phoneNumberId: "521aebf0-dda2-4548-a313-7f461be8943d",
       phoneCallProviderBypassEnabled: true,
       customer: {
-        number: From,
+        number: message.customer.number,
       },
       squad: {
         members,
