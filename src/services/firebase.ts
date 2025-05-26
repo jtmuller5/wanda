@@ -24,7 +24,7 @@ initializeApp({
   measurementId: "G-X16PYMLPFB",
 }; */
 
-const app = initializeApp(firebaseConfig);
+// const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore();
 db.settings({ ignoreUndefinedProperties: true });
