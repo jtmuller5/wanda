@@ -17,11 +17,20 @@ export async function wandaSendDirections({
   message: string;
   error: boolean;
 }> {
+  console.log("wandaSendDirections called with parameters:", {
+    callId,
+    placeName,
+    placeAddress,
+    placeId,
+    placeNumber,
+  });
+
   try {
     // Get the caller's phone number from the call record
     const callDoc = await db.collection("calls").doc(callId).get();
-    
+
     if (!callDoc.exists) {
+      console.error(`Call record with ID ${callId} not found.`);
       return {
         message: "Call record not found.",
         error: true,
@@ -32,6 +41,9 @@ export async function wandaSendDirections({
     const callerPhoneNumber = callData?.callerPhoneNumber;
 
     if (!callerPhoneNumber) {
+      console.error(
+        `Caller phone number not found in call record with ID ${callId}.`
+      );
       return {
         message: "Caller phone number not found.",
         error: true,
@@ -53,16 +65,20 @@ export async function wandaSendDirections({
         finalPlaceId = selectedPlace.placeId;
       } else {
         return {
-          message: "I couldn't find that place number in your recent search results. Could you tell me the name of the place you'd like directions to?",
+          message:
+            "I couldn't find that place number in your recent search results. Could you tell me the name of the place you'd like directions to?",
           error: true,
         };
       }
+    } else {
+      console.log()
     }
 
     // Validate that we have the required information
     if (!finalPlaceName) {
       return {
-        message: "I need the name of the place to send you directions. Could you tell me which place you'd like directions to?",
+        message:
+          "I need the name of the place to send you directions. Could you tell me which place you'd like directions to?",
         error: true,
       };
     }
@@ -89,12 +105,14 @@ export async function wandaSendDirections({
       mapsLink = `https://maps.google.com/maps/place/?q=place_id:${finalPlaceId}`;
     } else {
       // Use search query with place name and address
-      const searchQuery = encodeURIComponent(`${finalPlaceName} ${finalPlaceAddress || ''}`.trim());
+      const searchQuery = encodeURIComponent(
+        `${finalPlaceName} ${finalPlaceAddress || ""}`.trim()
+      );
       mapsLink = `https://maps.google.com/maps?q=${searchQuery}`;
     }
 
     // Create the text message
-    const messageBody = finalPlaceAddress 
+    const messageBody = finalPlaceAddress
       ? `Here are the directions to ${finalPlaceName}:\n\n${finalPlaceAddress}\n\n${mapsLink}\n\nSent by Wanda 🗺️`
       : `Here are the directions to ${finalPlaceName}:\n\n${mapsLink}\n\nSent by Wanda 🗺️`;
 
@@ -124,7 +142,7 @@ export async function wandaSendDirections({
     };
   } catch (error: any) {
     console.error("Error sending directions SMS:", error);
-    
+
     // Log specific Twilio errors for debugging
     if (error.code) {
       console.error("Twilio error code:", error.code);
@@ -132,7 +150,8 @@ export async function wandaSendDirections({
     }
 
     return {
-      message: "I'm sorry, I couldn't send the directions right now. Please try again later.",
+      message:
+        "I'm sorry, I couldn't send the directions right now. Please try again later.",
       error: true,
     };
   }

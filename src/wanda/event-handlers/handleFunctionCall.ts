@@ -35,10 +35,10 @@ export async function handleFunctionCall(
 
         res.status(200).json({
           results: [
-            JSON.stringify({
+            {
               toolCallId: functionCall.toolCallList[0].id,
               result: message,
-            }),
+            },
           ],
         });
       } catch (error) {
@@ -63,20 +63,21 @@ export async function handleFunctionCall(
 
         res.status(200).json({
           results: [
-            JSON.stringify({
+            {
               toolCallId: functionCall.toolCallList[0].id,
               result: message,
-            }),
+            },
           ],
         });
       } catch (error) {
         console.error("Error sending directions:", error);
         res.status(200).json({
           results: [
-            JSON.stringify({
+            {
               toolCallId: functionCall.toolCallList[0].id,
-              result: "I'm sorry, I couldn't send the directions right now. Please try again later.",
-            }),
+              result:
+                "I'm sorry, I couldn't send the directions right now. Please try again later.",
+            },
           ],
         });
       }

@@ -93,6 +93,7 @@ export async function wandaSearchMaps({
     console.log("Parsed data from Google Maps API (New):", data);
 
     if (!data.places || data.places.length === 0) {
+      console.log("No places found for the query:", textQuery);
       return {
         message: "I found no places matching your search.",
         error: false, // Not an error, just no results
@@ -108,9 +109,11 @@ export async function wandaSearchMaps({
         const address = place.formattedAddress
           ? ` at ${place.formattedAddress}`
           : "";
-        return `${index + 1}. ${name}${address}`;
+        return `${index + 1}. ${name}`; // ${address}
       })
       .join("\n");
+
+    console.log("Formatted places:", formattedPlaces);
 
     // Store the search results for potential directions requests
     const searchResults = topResults.map((place) => ({
