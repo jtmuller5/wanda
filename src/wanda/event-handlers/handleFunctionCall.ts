@@ -19,34 +19,37 @@ interface VapiFunctionCallMessage {
 }
 
 export async function handleFunctionCall(
-  message: VapiFunctionCallMessage,
+  functionCall: VapiFunctionCallMessage,
   res: Response
 ) {
-  console.log("Full function call message:", message);
+  console.log("Full function call message:", functionCall);
 
-  const func = message.toolCallList[0].function;
+  const func = functionCall.toolCallList[0].function;
   // Parse function parameters
   const parameters = func.arguments;
 
   switch (func.name) {
     case "wandaSearchMaps":
       try {
-        const { patient, newPatient, toolResult } = await wandaSearchMaps({
+        const { message, error } = await wandaSearchMaps({
           location: parameters.location,
           query: parameters.query,
           radius: parameters.radius,
         });
 
         res.status(200).json({
-          result: JSON.stringify({
-            patientId: patient?.id,
-          }),
+          results: [
+            JSON.stringify({
+              toolCallId: functionCall.toolCallList[0].id,
+              result: message
+            }),
+          ],
         });
       } catch (error) {
-        console.error("Error creating patient:", error);
+        console.error("Error searching maps:", error);
         res.status(200).json({
           result: JSON.stringify({
-            error: "Failed to create patient",
+            error: "Failed to search maps",
             success: false,
           }),
         });

@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import "dotenv/config";
-import { TwilioCallRequest, Assistant, VapiCallRequest } from "./types";
+import { VapiCallRequest } from "./types";
 import { WandaVariableValues } from "./wanda/config";
 import { db, loadCaller } from "./services/firebase";
 import ngrok from "ngrok";
@@ -96,8 +96,18 @@ app.post("/wanda", async (req, res) => {
 
     const members: Vapi.SquadMemberDto[] = [
       createIntroAssistant(model, variableValues, modelProvider),
-      createSearchAssistant(model, variableValues, modelProvider),
-      createProfileAssistant(model, variableValues, modelProvider),
+      createSearchAssistant(
+        model,
+        variableValues,
+        modelProvider,
+        `https://${req.headers.host}`
+      ),
+      createProfileAssistant(
+        model,
+        variableValues,
+        modelProvider,
+        `https://${req.headers.host}`
+      ),
     ];
 
     const responseBody = {
@@ -196,8 +206,18 @@ app.post("/wanda-twilio", async (req, res) => {
 
     const members: Vapi.SquadMemberDto[] = [
       createIntroAssistant(model, variableValues, modelProvider),
-      createSearchAssistant(model, variableValues, modelProvider),
-      createProfileAssistant(model, variableValues, modelProvider),
+      createSearchAssistant(
+        model,
+        variableValues,
+        modelProvider,
+        `https://${req.headers.host}`
+      ),
+      createProfileAssistant(
+        model,
+        variableValues,
+        modelProvider,
+        `https://${req.headers.host}`
+      ),
     ];
 
     const requestBody = JSON.stringify({

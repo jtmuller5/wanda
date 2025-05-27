@@ -194,17 +194,6 @@ interface KnowledgeBase {
   fileIds: string[]; // Assuming string IDs, adjust if different
 }
 
-/**
- * Represents overrides for a specific assistant within the squad.
- */
-interface AssistantOverrides {
-  model: ModelOverride;
-  firstMessage?: string; // Optional: Not present in the second member
-  firstMessageMode?: string; // Optional: Present in second/third member
-  variableValues: WandaVariableValues;
-  // Note: 'tools' and 'knowledgeBase' are inside 'model' in the second/third member example
-}
-
 // --- Nested Type for Assistant Destinations ---
 
 /**
@@ -216,30 +205,6 @@ interface AssistantDestination {
   type: "assistant"; // Assuming only 'assistant' type for now
   assistantName: string;
   transferMode: string; // e.g., 'swap-system-message-in-history'
-}
-
-// --- Main Interface for a Squad Member ---
-
-/**
- * Represents a single member within the 'squad.members' array.
- */
-export interface Assistant {
-  assistant?: {
-    name?: string; // e.g., "Wanda_Intro"
-    model?: ModelOverride; // Model configuration
-    voice?: {
-      voiceId: string; // e.g., "emma"
-      provider: string; // e.g., "azure"
-    };
-    transcriber?: {
-      provider: string; // e.g., "deepgram"
-    };
-    firstMessage?: string; // Optional: Initial message from the assistant
-    firstMessageMode?: string; // Optional: Mode for the first message, e.g., "assistant-speaks-first"
-  };
-  assistantId: string; // UUID format
-  assistantOverrides: AssistantOverrides;
-  assistantDestinations: AssistantDestination[];
 }
 
 /**

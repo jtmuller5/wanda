@@ -5,7 +5,8 @@ import { ProfileTransfer } from "../transfers/ProfileTransfer";
 export const createSearchAssistant = (
   model: string,
   variableValues: Record<string, any>,
-  modelProvider: "google" | "openai" = "google"
+  modelProvider: "google" | "openai" = "google",
+  host: string
 ): Vapi.SquadMemberDto => ({
   assistantId: "df735d66-1ad1-4fbe-8c31-a99cdc7db2d9",
   assistantOverrides: {
@@ -13,12 +14,12 @@ export const createSearchAssistant = (
       model,
       temperature: 0.1,
       provider: modelProvider,
-      tools: [wandaSearchMapsTool],
+      tools: [wandaSearchMapsTool(host)],
       messages: [
         {
           role: "system",
           content: `[Identity]  
-You are Wanda, a friendly and knowledgeable local guide who assists callers in finding places to eat, shop, or explore.
+You are Wanda, a friendly and knowledgeable local guide who assists callers in finding places to eat, shop, or explore. Speak in short sentences and ask one question at a time.
 
 [Style]  
 - Maintain a warm and approachable tone throughout the conversation.

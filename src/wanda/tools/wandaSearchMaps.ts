@@ -1,34 +1,48 @@
-import { VapiTool } from "../../types";
+import { Vapi } from "@vapi-ai/server-sdk";
 
-export const wandaSearchMapsTool: VapiTool = {
-  type: "function",
-  async: true,
-  server: {
-    url: process.env.WANDA_API_URL + "/events",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  },
-  function: {
-    name: "wandaSearchMaps",
-    description: "Search Google Maps for a given query.",
-    parameters: {
-      type: "object",
-      properties: {
-        query: {
-          type: "string",
-          description: "The search query to find places on Google Maps.",
-        },
-        location: {
-          type: "string",
-          description: "The location to search around (latitude,longitude).",
-        },
-        radius: {
-          type: "number",
-          description: "The radius (in meters) around the location to search.",
-        },
+export function wandaSearchMapsTool(host: string): Vapi.OpenAiModelToolsItem {
+  return {
+    type: "function",
+    async: false,
+    server: {
+      url: host + "/events",
+      headers: {
+        "Content-Type": "application/json",
       },
-      required: ["query", "location"],
     },
-  },
-};
+    messages: [
+      {
+        type: "request-start",
+        content: "Give me a moment to search the map for you.",
+      },
+      {
+        type: "request-failed",
+        content:
+          "Hmm...I couldn't find any places matching your search. Would you like to try a different query?",
+      },
+    ],
+    function: {
+      name: "wandaSearchMaps",
+      description: "Search Google Maps for a given query.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: {
+            type: "string",
+            description: "The search query to find places on Google Maps.",
+          },
+          location: {
+            type: "string",
+            description: "The location to search around (latitude,longitude).",
+          },
+          radius: {
+            type: "number",
+            description:
+              "The radius (in meters) around the location to search.",
+          },
+        },
+        required: ["query", "location"],
+      },
+    },
+  };
+}

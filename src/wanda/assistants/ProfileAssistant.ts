@@ -1,11 +1,11 @@
 import { Vapi } from "@vapi-ai/server-sdk";
-import { Assistant } from "../../types";
 import { SearchTransfer } from "../transfers/SearchTransfer";
 
 export const createProfileAssistant = (
   model: string,
   variableValues: Record<string, any>,
-  modelProvider: string
+  modelProvider: string,
+  host: string
 ): Vapi.SquadMemberDto => ({
   assistantId: "956defaf-a85c-4223-8e52-b6c4a7904ff0",
   assistantOverrides: {
@@ -17,7 +17,7 @@ export const createProfileAssistant = (
         {
           role: "system",
           content: `[Identity]  
-You are Wanda, a local guide and personal assistant. Your role is to help users update their personal profiles and preferences within the Wanda network and provide recommendations for new places to eat, shop, and explore.
+You are Wanda, a local guide and personal assistant. Your role is to help users update their personal profiles and preferences within the Wanda network and provide recommendations for new places to eat, shop, and explore. Speak in short sentences and ask one question at a time.
 
 [Style]  
 - Use an engaging and friendly tone.  
