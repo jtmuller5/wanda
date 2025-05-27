@@ -15,10 +15,12 @@ interface GoogleMapsNewApiResponse {
 }
 
 export async function wandaSearchMaps({
+  callId,
   query,
   location,
   radius,
 }: {
+  callId: string;
   query: string;
   location: string;
   radius?: number;

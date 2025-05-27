@@ -1,29 +1,14 @@
-import { VapiCall } from "../../types";
 import { Response } from "express";
 import { wandaSearchMaps } from "../responses/wandaSearchMapsResponse";
-
-interface VapiFunctionCallMessage {
-  type: "tool-calls";
-  timestamp: number;
-  call: VapiCall;
-  toolCallList: {
-    id: string;
-    type: "function";
-    function: { name: string; arguments: Record<string, any> };
-  }[];
-  assistant?: {
-    id: string;
-    name: string;
-    variableValues: Record<string, any>;
-  };
-}
+import { Vapi } from "@vapi-ai/server-sdk";
 
 export async function handleFunctionCall(
-  functionCall: VapiFunctionCallMessage,
+  functionCall: Vapi.ServerMessageToolCalls,
   res: Response
 ) {
   console.log("Full function call message:", functionCall);
 
+  const callId = functionCall.call?.id ?? "missing";
   const func = functionCall.toolCallList[0].function;
   // Parse function parameters
   const parameters = func.arguments;
@@ -32,16 +17,17 @@ export async function handleFunctionCall(
     case "wandaSearchMaps":
       try {
         const { message, error } = await wandaSearchMaps({
-          location: parameters.location,
-          query: parameters.query,
-          radius: parameters.radius,
+          callId,
+          location: parameters.location as string,
+          query: parameters.query as string,
+          radius: parameters.radius ? (parameters.radius as number) : undefined,
         });
 
         res.status(200).json({
           results: [
             JSON.stringify({
               toolCallId: functionCall.toolCallList[0].id,
-              result: message
+              result: message,
             }),
           ],
         });
@@ -54,6 +40,15 @@ export async function handleFunctionCall(
           }),
         });
       }
+      break;
+    case "wandaSendDirections":
+      console.log("Function 'wandaSendDirections' is not implemented yet.");
+      res.status(200).json({
+        result: JSON.stringify({
+          error: "Function 'wandaSendDirections' is not implemented yet.",
+          success: false,
+        }),
+      });
       break;
     default:
       console.log(`Unknown function: ${func.name}`);

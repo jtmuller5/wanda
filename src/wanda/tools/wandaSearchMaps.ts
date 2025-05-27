@@ -10,7 +10,7 @@ export function wandaSearchMapsTool(host: string): Vapi.OpenAiModelToolsItem {
         "Content-Type": "application/json",
       },
     },
-    messages: [
+    /* messages: [
       {
         type: "request-start",
         content: "Give me a moment to search the map for you.",
@@ -20,7 +20,7 @@ export function wandaSearchMapsTool(host: string): Vapi.OpenAiModelToolsItem {
         content:
           "Hmm...I couldn't find any places matching your search. Would you like to try a different query?",
       },
-    ],
+    ], */
     function: {
       name: "wandaSearchMaps",
       description: "Search Google Maps for a given query.",

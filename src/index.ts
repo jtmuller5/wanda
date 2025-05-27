@@ -128,7 +128,7 @@ app.post("/wanda", async (req, res) => {
           },
           voice: {
             provider: "11labs",
-            voiceId: "cgSgspJ2msm6clMCkdW9",
+            voiceId: "56AoDkrOh6qfVPDXZ7Pt",
             useSpeakerBoost: true,
             style: 0,
             optimizeStreamingLatency: 4,
@@ -238,7 +238,7 @@ app.post("/wanda-twilio", async (req, res) => {
           },
           voice: {
             provider: "11labs",
-            voiceId: "cgSgspJ2msm6clMCkdW9",
+            voiceId: "56AoDkrOh6qfVPDXZ7Pt",
             useSpeakerBoost: true,
             style: 0,
             optimizeStreamingLatency: 4,
