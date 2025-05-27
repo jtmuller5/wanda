@@ -12,7 +12,7 @@ initializeApp({
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
     privateKey: privateKey,
   }),
-}); 
+});
 
 /* const firebaseConfig = {
   apiKey: "AIzaSyCZ0gc2lqqW5iQ_lYG-fWbmJPUr8z9zWt8",
@@ -59,13 +59,21 @@ export async function loadCaller({
   phoneNumber,
 }: {
   phoneNumber: number;
-}): Promise<any> {
+}): Promise<{
+  createdAt: string;
+  phoneNumber: number;
+  lastCalledAt?: string;
+} | null> {
   try {
     const callerRef = db.collection("callers").doc(String(phoneNumber));
     const callerDoc = await callerRef.get();
 
     if (callerDoc.exists) {
-      return callerDoc.data();
+      return callerDoc.data() as {
+        createdAt: string;
+        phoneNumber: number;
+        lastCalledAt?: string;
+      } | null;
     } else {
       // Create a new caller document if it doesn't exist
       const caller = await callerRef.set({
@@ -75,7 +83,11 @@ export async function loadCaller({
 
       console.log("Created new caller:", caller);
 
-      return caller;
+      return {
+        createdAt: new Date().toISOString(),
+        phoneNumber: phoneNumber,
+        lastCalledAt: undefined,
+      };
     }
   } catch (error) {
     console.error("Error loading caller:", error);

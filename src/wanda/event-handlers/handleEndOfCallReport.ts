@@ -23,6 +23,8 @@ export async function handleEndOfCallReport(
     `End of call report for call ${message.call.id}, reason: ${message.endedReason}`
   );
 
+  console.log("End of call report message:", message);
+
   try {
     // Find the institution and location IDs for this call
     const officeSnapshot = await db
