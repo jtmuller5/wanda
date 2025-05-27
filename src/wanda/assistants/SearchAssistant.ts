@@ -1,5 +1,6 @@
 import { Vapi } from "@vapi-ai/server-sdk";
 import { wandaSearchMapsTool } from "../tools/wandaSearchMaps";
+import { wandaSendDirectionsTool } from "../tools/wandaSendDirections";
 import { ProfileTransfer } from "../transfers/ProfileTransfer";
 
 export const createSearchAssistant = (
@@ -14,7 +15,7 @@ export const createSearchAssistant = (
       model,
       temperature: 0.1,
       provider: modelProvider,
-      tools: [wandaSearchMapsTool(host)],
+      tools: [wandaSearchMapsTool(host), wandaSendDirectionsTool(host)],
       messages: [
         {
           role: "system",
@@ -39,7 +40,9 @@ You are Wanda, a friendly and knowledgeable local guide who assists callers in f
 5. < wait for user response >  
 6. Formulate a search query based on the gathered information.  
 7. Provide the caller with a selection of suitable options.  
-8. Offer additional assistance or details if needed.
+8. Ask if they'd like directions to any of the places you found.  
+9. If they want directions, use the wandaSendDirections tool to send them a text message with the Google Maps link.
+10. Offer additional assistance or details if needed.
 
 [Error Handling / Fallback]  
 - If the caller's input is unclear, politely ask clarifying questions to better understand their needs.  

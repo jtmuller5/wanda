@@ -27,6 +27,11 @@ export async function wandaSearchMaps({
 }): Promise<{
   message: string;
   error: boolean;
+  searchResults?: Array<{
+    name: string;
+    address: string;
+    placeId: string;
+  }>;
 }> {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   if (!apiKey) {
@@ -107,9 +112,17 @@ export async function wandaSearchMaps({
       })
       .join("\n");
 
+    // Store the search results for potential directions requests
+    const searchResults = topResults.map((place) => ({
+      name: place.displayName?.text || "Unknown Place",
+      address: place.formattedAddress || "",
+      placeId: place.id || "",
+    }));
+
     return {
-      message: `I found the following places:\n${formattedPlaces}`,
+      message: `I found the following places:\n${formattedPlaces}\n\nWould you like me to send you directions to any of these places?`,
       error: false,
+      searchResults, // Include this for potential use by the assistant
     };
   } catch (e: any) {
     console.error("Exception in wandaSearchMaps:", e);

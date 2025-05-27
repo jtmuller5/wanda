@@ -82,3 +82,44 @@ export async function loadCaller({
     throw error;
   }
 }
+
+export async function storeSearchResults({
+  callId,
+  searchResults,
+}: {
+  callId: string;
+  searchResults: Array<{
+    name: string;
+    address: string;
+    placeId: string;
+  }>;
+}) {
+  try {
+    await db.collection("calls").doc(callId).update({
+      lastSearchResults: searchResults,
+      lastSearchAt: new Date().toISOString(),
+    });
+    console.log(`Stored search results for call ${callId}`);
+  } catch (error) {
+    console.error("Error storing search results:", error);
+    throw error;
+  }
+}
+
+export async function getSearchResults(callId: string): Promise<Array<{
+  name: string;
+  address: string;
+  placeId: string;
+}> | null> {
+  try {
+    const callDoc = await db.collection("calls").doc(callId).get();
+    if (callDoc.exists) {
+      const data = callDoc.data();
+      return data?.lastSearchResults || null;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting search results:", error);
+    return null;
+  }
+}
