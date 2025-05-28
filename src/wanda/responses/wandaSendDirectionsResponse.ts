@@ -55,23 +55,40 @@ export async function wandaSendDirections({
     let finalPlaceAddress = placeAddress;
     let finalPlaceId = placeId;
 
-    // If placeNumber is provided, get the place from recent search results
-    if (placeNumber && (!placeName || !placeAddress)) {
-      const searchResults = await getSearchResults(callId);
-      if (searchResults && searchResults.length >= placeNumber) {
-        const selectedPlace = searchResults[placeNumber - 1]; // Array is 0-indexed
-        finalPlaceName = selectedPlace.name;
-        finalPlaceAddress = selectedPlace.address;
-        finalPlaceId = selectedPlace.placeId;
+    // Get search results for potential matching
+    const searchResults = await getSearchResults(callId);
+
+    // If placeNumber is provided, get the place from recent search results by index
+    if (placeNumber && searchResults && searchResults.length >= placeNumber) {
+      const selectedPlace = searchResults[placeNumber - 1]; // Array is 0-indexed
+      finalPlaceName = selectedPlace.name;
+      finalPlaceAddress = selectedPlace.address;
+      finalPlaceId = selectedPlace.placeId;
+    }
+    // If we have a place name but missing address/placeId, try to find it in search results
+    else if (finalPlaceName && (!finalPlaceAddress || !finalPlaceId) && searchResults) {
+      // Try to find a matching place by name (case-insensitive partial match)
+      const matchingPlace = searchResults.find(place => 
+        place.name.toLowerCase().includes(finalPlaceName!.toLowerCase()) ||
+        finalPlaceName!.toLowerCase().includes(place.name.toLowerCase())
+      );
+      
+      if (matchingPlace) {
+        console.log(`Found matching place in search results: ${matchingPlace.name}`);
+        finalPlaceName = matchingPlace.name;
+        finalPlaceAddress = matchingPlace.address;
+        finalPlaceId = matchingPlace.placeId;
       } else {
-        return {
-          message:
-            "I couldn't find that place number in your recent search results. Could you tell me the name of the place you'd like directions to?",
-          error: true,
-        };
+        console.log(`No matching place found for "${finalPlaceName}" in recent search results`);
       }
-    } else {
-      console.log();
+    }
+    // Handle case where placeNumber was provided but not found
+    else if (placeNumber && (!searchResults || searchResults.length < placeNumber)) {
+      return {
+        message:
+          "I couldn't find that place number in your recent search results. Could you tell me the name of the place you'd like directions to?",
+        error: true,
+      };
     }
 
     // Validate that we have the required information

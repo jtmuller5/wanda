@@ -1,6 +1,6 @@
 import { Vapi } from "@vapi-ai/server-sdk";
 
-export function wandaGetPlateDetailsTool(
+export function wandaGetPlaceDetailsTool(
   host: string
 ): Vapi.OpenAiModelToolsItem {
   return {
@@ -13,7 +13,7 @@ export function wandaGetPlateDetailsTool(
       },
     },
     function: {
-      name: "wandaGetPlateDetails",
+      name: "wandaGetPlaceDetails",
       description: "Get detailed information about a specific place.",
       parameters: {
         type: "object",
