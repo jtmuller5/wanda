@@ -109,9 +109,9 @@ export async function wandaSearchMaps({
         const address = place.formattedAddress
           ? ` at ${place.formattedAddress}`
           : "";
-        return `${index + 1}. ${name}`; // ${address}
+        return `${name}`; // ${address}
       })
-      .join("\n");
+      .join(", ");
 
     console.log("Formatted places:", formattedPlaces);
 

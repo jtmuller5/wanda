@@ -71,7 +71,7 @@ export async function wandaSendDirections({
         };
       }
     } else {
-      console.log()
+      console.log();
     }
 
     // Validate that we have the required information
@@ -100,20 +100,16 @@ export async function wandaSendDirections({
 
     // Create Google Maps link
     let mapsLink: string;
-    if (finalPlaceId) {
-      // Use Place ID for more accurate link
-      mapsLink = `https://maps.google.com/maps/place/?q=place_id:${finalPlaceId}`;
-    } else {
-      // Use search query with place name and address
-      const searchQuery = encodeURIComponent(
-        `${finalPlaceName} ${finalPlaceAddress || ""}`.trim()
-      );
-      mapsLink = `https://maps.google.com/maps?q=${searchQuery}`;
-    }
+
+    // Use search query with place name and address
+    const searchQuery = encodeURIComponent(
+      `${finalPlaceName} ${finalPlaceAddress || ""}`.trim()
+    );
+    mapsLink = `https://maps.google.com/maps?q=${searchQuery}`;
 
     // Create the text message
     const messageBody = finalPlaceAddress
-      ? `Here are the directions to ${finalPlaceName}:\n\n${finalPlaceAddress}\n\n${mapsLink}\n\nSent by Wanda 🗺️`
+      ? `Here are the directions to ${finalPlaceName}:\n\n${finalPlaceAddress}\n\nSent by Wanda 🗺️`
       : `Here are the directions to ${finalPlaceName}:\n\n${mapsLink}\n\nSent by Wanda 🗺️`;
 
     // Send the SMS

@@ -3,6 +3,7 @@ import { wandaSearchMaps } from "../responses/wandaSearchMapsResponse";
 import { wandaSendDirections } from "../responses/wandaSendDirectionsResponse";
 import { storeSearchResults } from "../../services/firebase";
 import { Vapi } from "@vapi-ai/server-sdk";
+import { wandaGetPlaceDetails } from "../responses/wandaGetPlaceDetailsResponse";
 
 export async function handleFunctionCall(
   functionCall: Vapi.ServerMessageToolCalls,
@@ -82,6 +83,38 @@ export async function handleFunctionCall(
         });
       }
       break;
+    case "wandaGetPlaceDetails":
+      try {
+        const { message, error } = await wandaGetPlaceDetails({
+          callId,
+          placeName: parameters.placeName as string | undefined,
+          placeAddress: parameters.placeAddress as string | undefined,
+          placeId: parameters.placeId as string | undefined,
+          placeNumber: parameters.placeNumber as number | undefined,
+        });
+
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result: message,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error getting place details:", error);
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result:
+                "I'm sorry, I couldn't search for the place details right now. Please try again later.",
+            },
+          ],
+        });
+      }
+      break;
+
     default:
       console.log(`Unknown function: ${func.name}`);
       res.status(200).json({

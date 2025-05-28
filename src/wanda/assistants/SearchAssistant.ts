@@ -2,6 +2,7 @@ import { Vapi } from "@vapi-ai/server-sdk";
 import { wandaSearchMapsTool } from "../tools/wandaSearchMaps";
 import { wandaSendDirectionsTool } from "../tools/wandaSendDirections";
 import { ProfileTransfer } from "../transfers/ProfileTransfer";
+import { wandaGetPlateDetailsTool } from "../tools/wandaGetPlaceDetails";
 
 export const createSearchAssistant = (
   model: string,
@@ -15,7 +16,11 @@ export const createSearchAssistant = (
       model,
       temperature: 0.1,
       provider: modelProvider,
-      tools: [wandaSearchMapsTool(host), wandaSendDirectionsTool(host)],
+      tools: [
+        wandaSearchMapsTool(host),
+        wandaSendDirectionsTool(host),
+        wandaGetPlateDetailsTool(host),
+      ],
       messages: [
         {
           role: "system",
