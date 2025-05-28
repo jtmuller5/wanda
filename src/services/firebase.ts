@@ -1,6 +1,7 @@
 import { initializeApp, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import dotenv from "dotenv";
+import { WandaCaller } from "../types";
 
 dotenv.config();
 
@@ -59,21 +60,13 @@ export async function loadCaller({
   phoneNumber,
 }: {
   phoneNumber: number;
-}): Promise<{
-  createdAt: string;
-  phoneNumber: number;
-  lastCalledAt?: string;
-} | null> {
+}): Promise<WandaCaller | null> {
   try {
     const callerRef = db.collection("callers").doc(String(phoneNumber));
     const callerDoc = await callerRef.get();
 
     if (callerDoc.exists) {
-      return callerDoc.data() as {
-        createdAt: string;
-        phoneNumber: number;
-        lastCalledAt?: string;
-      } | null;
+      return callerDoc.data() as WandaCaller | null;
     } else {
       // Create a new caller document if it doesn't exist
       const caller = await callerRef.set({
@@ -150,7 +143,7 @@ export async function getCallerProfile(phoneNumber: string): Promise<{
   try {
     const callerRef = db.collection("callers").doc(phoneNumber);
     const callerDoc = await callerRef.get();
-    
+
     if (callerDoc.exists) {
       return callerDoc.data() as {
         name?: string;

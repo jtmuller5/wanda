@@ -77,7 +77,14 @@ app.post("/wanda", async (req, res) => {
   );
 
   const variableValues: WandaVariableValues = {
-    callerName: undefined,
+    callerName: caller?.name,
+    newCaller: caller?.lastCalledAt !== undefined,
+    callerActivitiesPreferences: caller?.activitiesPreferences || [],
+    callerAge: caller?.age,
+    callerCity: caller?.city,
+    callerShoppingPreferences: caller?.shoppingPreferences || [],
+    callerEntertainmentPreferences: caller?.entertainmentPreferences || [],
+    callerFoodPreferences: caller?.foodPreferences || [],
   };
 
   try {
@@ -187,7 +194,14 @@ app.post("/wanda-twilio", async (req, res) => {
   );
 
   const variableValues: WandaVariableValues = {
-    callerName: undefined,
+    callerName: caller?.name,
+    newCaller: caller?.lastCalledAt !== undefined,
+    callerActivitiesPreferences: caller?.activitiesPreferences || [],
+    callerAge: caller?.age,
+    callerCity: caller?.city,
+    callerShoppingPreferences: caller?.shoppingPreferences || [],
+    callerEntertainmentPreferences: caller?.entertainmentPreferences || [],
+    callerFoodPreferences: caller?.foodPreferences || [],
   };
 
   try {

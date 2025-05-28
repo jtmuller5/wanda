@@ -1,5 +1,18 @@
 import { WandaVariableValues } from "./wanda/config";
 
+export interface WandaCaller {
+  createdAt: string;
+  phoneNumber: number;
+  lastCalledAt?: string;
+  name?: string;
+  age?: number;
+  city?: string;
+  foodPreferences?: string[];
+  activitiesPreferences?: string[];
+  shoppingPreferences?: string[];
+  entertainmentPreferences?: string[];
+}
+
 export interface TwilioCallRequest {
   Called: string;
   ToState: string;
