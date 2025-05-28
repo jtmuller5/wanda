@@ -79,12 +79,20 @@ app.post("/wanda", async (req, res) => {
   const variableValues: WandaVariableValues = {
     callerName: caller?.name,
     newCaller: caller?.lastCalledAt !== undefined,
-    callerActivitiesPreferences: caller?.activitiesPreferences || [],
     callerAge: caller?.age,
     callerCity: caller?.city,
-    callerShoppingPreferences: caller?.shoppingPreferences || [],
-    callerEntertainmentPreferences: caller?.entertainmentPreferences || [],
-    callerFoodPreferences: caller?.foodPreferences || [],
+    callerActivitiesPreferences: (caller?.activitiesPreferences || [])
+      .map((ap) => ap.toLowerCase())
+      .join(", "),
+    callerShoppingPreferences: (caller?.shoppingPreferences || [])
+      .map((sp) => sp.toLowerCase())
+      .join(", "),
+    callerEntertainmentPreferences: (caller?.entertainmentPreferences || [])
+      .map((ep) => ep.toLowerCase())
+      .join(", "),
+    callerFoodPreferences: (caller?.foodPreferences || [])
+      .map((fp) => fp.toLowerCase())
+      .join(", "),
   };
 
   console.log("Variable values for Wanda:", variableValues);
@@ -198,12 +206,20 @@ app.post("/wanda-twilio", async (req, res) => {
   const variableValues: WandaVariableValues = {
     callerName: caller?.name,
     newCaller: caller?.lastCalledAt !== undefined,
-    callerActivitiesPreferences: caller?.activitiesPreferences || [],
     callerAge: caller?.age,
     callerCity: caller?.city,
-    callerShoppingPreferences: caller?.shoppingPreferences || [],
-    callerEntertainmentPreferences: caller?.entertainmentPreferences || [],
-    callerFoodPreferences: caller?.foodPreferences || [],
+    callerShoppingPreferences: (caller?.shoppingPreferences || [])
+      .map((sp) => sp.toLowerCase())
+      .join(", "),
+    callerActivitiesPreferences: (caller?.activitiesPreferences || [])
+      .map((ap) => ap.toLowerCase())
+      .join(", "),
+    callerEntertainmentPreferences: (caller?.entertainmentPreferences || [])
+      .map((ep) => ep.toLowerCase())
+      .join(", "),
+    callerFoodPreferences: (caller?.foodPreferences || [])
+      .map((fp) => fp.toLowerCase())
+      .join(", "),
   };
 
   console.log("Variable values for Wanda:", variableValues);
