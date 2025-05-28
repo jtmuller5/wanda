@@ -1,3 +1,5 @@
+import { db, getCallerProfile } from "../../services/firebase";
+
 interface Place {
   displayName?: {
     text: string;
@@ -41,8 +43,43 @@ export async function wandaSearchMaps({
     };
   }
 
+  // Get caller profile to enhance search with preferences
+  let callerProfile = null;
+  try {
+    const callDoc = await db.collection("calls").doc(callId).get();
+    if (callDoc.exists) {
+      const callData = callDoc.data();
+      const callerPhoneNumber = callData?.callerPhoneNumber;
+      if (callerPhoneNumber) {
+        const phoneNumberId = callerPhoneNumber.replace("+1", "");
+        callerProfile = await getCallerProfile(phoneNumberId);
+      }
+    }
+  } catch (error) {
+    console.log("Could not load caller profile for search enhancement:", error);
+  }
+
+  // Use caller's city if available and no location specified
+  let searchLocation = location;
+  if (!searchLocation && callerProfile?.city) {
+    searchLocation = callerProfile.city;
+    console.log(`Using caller's profile city for search: ${searchLocation}`);
+  }
+
+  // Enhance query with food preferences if it's a food-related search
+  let enhancedQuery = query;
+  if (callerProfile?.foodPreferences && callerProfile.foodPreferences.length > 0) {
+    const isFood = /restaurant|food|eat|dining|cuisine|lunch|dinner|breakfast|cafe|coffee/i.test(query);
+    if (isFood) {
+      // Add preferences to help with relevance
+      const preferences = callerProfile.foodPreferences.slice(0, 2).join(" "); // Limit to avoid overly long queries
+      enhancedQuery = `${query} ${preferences}`;
+      console.log(`Enhanced food search query with preferences: ${enhancedQuery}`);
+    }
+  }
+
   // Construct the search query - combine query with location for better results
-  const textQuery = location ? `${query} in ${location}` : query;
+  const textQuery = searchLocation ? `${enhancedQuery} in ${searchLocation}` : enhancedQuery;
 
   // Prepare the request body for the new API
   const requestBody: any = {
@@ -122,8 +159,23 @@ export async function wandaSearchMaps({
       placeId: place.id || "",
     }));
 
+    // Build personalized response message
+    let responseMessage = `I found the following places:\n${formattedPlaces}`;
+    
+    // Add personalized context if we used profile information
+    if (callerProfile) {
+      if (searchLocation === callerProfile.city && location !== callerProfile.city) {
+        responseMessage += `\n\n(I used ${callerProfile.city} from your profile since you didn't specify a location)`;
+      }
+      if (enhancedQuery !== query && callerProfile.foodPreferences?.length) {
+        responseMessage += `\n\n(I factored in your food preferences to find better matches)`;
+      }
+    }
+    
+    responseMessage += `\n\nWould you like me to send you directions to any of these places?`;
+
     return {
-      message: `I found the following places:\n${formattedPlaces}\n\nWould you like me to send you directions to any of these places?`,
+      message: responseMessage,
       error: false,
       searchResults, // Include this for potential use by the assistant
     };

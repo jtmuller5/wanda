@@ -135,3 +135,30 @@ export async function getSearchResults(callId: string): Promise<Array<{
     return null;
   }
 }
+
+export async function getCallerProfile(phoneNumber: string): Promise<{
+  name?: string;
+  city?: string;
+  foodPreferences?: string[];
+  createdAt: string;
+  updatedAt?: string;
+} | null> {
+  try {
+    const callerRef = db.collection("callers").doc(phoneNumber);
+    const callerDoc = await callerRef.get();
+    
+    if (callerDoc.exists) {
+      return callerDoc.data() as {
+        name?: string;
+        city?: string;
+        foodPreferences?: string[];
+        createdAt: string;
+        updatedAt?: string;
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting caller profile:", error);
+    return null;
+  }
+}

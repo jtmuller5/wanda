@@ -1,4 +1,5 @@
 export interface WandaVariableValues {
-    callerName?: string;
-    
+  callerName?: string;
+  callerCity?: string;
+  callerFoodPreferences?: string[];
 }

@@ -4,6 +4,8 @@ import { wandaSendDirections } from "../responses/wandaSendDirectionsResponse";
 import { storeSearchResults } from "../../services/firebase";
 import { Vapi } from "@vapi-ai/server-sdk";
 import { wandaGetPlaceDetails } from "../responses/wandaGetPlaceDetailsResponse";
+import { wandaUpdateProfile } from "../responses/wandaUpdateProfileResponse";
+import { wandaGetProfile } from "../responses/wandaGetProfileResponse";
 
 export async function handleFunctionCall(
   functionCall: Vapi.ServerMessageToolCalls,
@@ -109,6 +111,64 @@ export async function handleFunctionCall(
               toolCallId: functionCall.toolCallList[0].id,
               result:
                 "I'm sorry, I couldn't search for the place details right now. Please try again later.",
+            },
+          ],
+        });
+      }
+      break;
+    case "wandaUpdateProfile":
+      try {
+        const { message, error } = await wandaUpdateProfile({
+          callId,
+          name: parameters.name as string | undefined,
+          city: parameters.city as string | undefined,
+          foodPreferences: parameters.foodPreferences as string[] | undefined,
+          addToFoodPreferences: parameters.addToFoodPreferences as boolean | undefined,
+        });
+
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result: message,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result:
+                "I'm sorry, I couldn't update your profile right now. Please try again later.",
+            },
+          ],
+        });
+      }
+      break;
+    case "wandaGetProfile":
+      try {
+        const { message, error } = await wandaGetProfile({
+          callId,
+        });
+
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result: message,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error getting profile:", error);
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result:
+                "I'm sorry, I couldn't retrieve your profile right now. Please try again later.",
             },
           ],
         });
