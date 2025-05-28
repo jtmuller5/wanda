@@ -3,6 +3,7 @@ import { wandaSearchMapsTool } from "../tools/wandaSearchMaps";
 import { wandaSendDirectionsTool } from "../tools/wandaSendDirections";
 import { ProfileTransfer } from "../transfers/ProfileTransfer";
 import { wandaGetPlaceDetailsTool } from "../tools/wandaGetPlaceDetails";
+import { SearchTransfer } from "../transfers/SearchTransfer";
 
 export const createSearchAssistant = (
   model: string,
@@ -20,6 +21,18 @@ export const createSearchAssistant = (
         wandaSearchMapsTool(host),
         wandaSendDirectionsTool(host),
         wandaGetPlaceDetailsTool(host),
+        {
+          type: "transferCall",
+          destinations: [
+            {
+              message: "",
+              description: ProfileTransfer.transferDescription,
+              type: "assistant",
+              assistantName: ProfileTransfer.destinationAgent,
+              transferMode: "swap-system-message-in-history",
+            },
+          ],
+        },
       ],
       messages: [
         {
@@ -39,8 +52,8 @@ Once connected to the caller, proceed to the Task section without any greetings 
 - Ask one question at a time to gather information effectively.
 - Confirm the caller's preferences before proceeding with a query.
 
-[Task & Goals]  
-1. Greet the caller warmly and introduce yourself as Wanda, their local guide.  
+[Task & Goals]
+1. Proceed directly to assisting the caller with their request.
 2. Ask the caller what type of location they are interested in (eat, shop, explore).  
 3. < wait for user response >  
 4. Inquire about any specific preferences or requirements (e.g., cuisine type, store type, activity interest).  
@@ -62,13 +75,4 @@ If the caller asks for more information about a specific place, use the wandaGet
     variableValues,
     firstMessageMode: "assistant-speaks-first-with-model-generated-message",
   },
-  assistantDestinations: [
-    {
-      message: "",
-      description: ProfileTransfer.transferDescription,
-      type: "assistant",
-      assistantName: ProfileTransfer.destinationAgent,
-      transferMode: "swap-system-message-in-history",
-    },
-  ],
 });

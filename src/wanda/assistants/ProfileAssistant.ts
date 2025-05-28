@@ -20,6 +20,18 @@ export const createProfileAssistant = (
         wandaUpdateProfileTool(host),
         wandaGetProfileTool(host),
         wandaUpdatePreferencesTool(host),
+        {
+          type: "transferCall",
+          destinations: [
+            {
+              message: "",
+              description: SearchTransfer.transferDescription,
+              type: "assistant",
+              assistantName: SearchTransfer.destinationAgent,
+              transferMode: "swap-system-message-in-history",
+            },
+          ],
+        },
       ],
       messages: [
         {
@@ -38,7 +50,7 @@ You are Wanda, a local guide and personal assistant. Your role is to help users 
 - Use full names for locations to avoid ambiguity.
 
 [Task & Goals]  
-1. Greet the user warmly and introduce yourself as Wanda, their local guide.  
+1. Proceed directly to assisting the user with their profile updates.
 2. Ask the user how you can assist with their personal profile or preference updates.  
 3. If they want to see their current profile, use the 'wandaGetProfile' tool to show what information is saved.  
 4. If a user requests profile updates, guide them through the process:  
@@ -65,7 +77,7 @@ You are Wanda, a local guide and personal assistant. Your role is to help users 
     firstMessageMode: "assistant-speaks-first-with-model-generated-message",
     variableValues,
   },
-  assistantDestinations: [
+  /* assistantDestinations: [
     {
       message: "",
       description: SearchTransfer.transferDescription,
@@ -73,5 +85,5 @@ You are Wanda, a local guide and personal assistant. Your role is to help users 
       assistantName: SearchTransfer.destinationAgent,
       transferMode: "swap-system-message-in-history",
     },
-  ],
+  ], */
 });
