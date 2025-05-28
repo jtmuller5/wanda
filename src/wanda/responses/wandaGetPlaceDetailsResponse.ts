@@ -1,5 +1,4 @@
 import { db, getSearchResults } from "../../services/firebase";
-import twilio from "twilio";
 
 export async function wandaGetPlaceDetails({
   callId,
@@ -55,23 +54,40 @@ export async function wandaGetPlaceDetails({
     let finalPlaceAddress = placeAddress;
     let finalPlaceId = placeId;
 
-    // If placeNumber is provided, get the place from recent search results
-    if (placeNumber && (!placeName || !placeAddress)) {
-      const searchResults = await getSearchResults(callId);
-      if (searchResults && searchResults.length >= placeNumber) {
-        const selectedPlace = searchResults[placeNumber - 1]; // Array is 0-indexed
-        finalPlaceName = selectedPlace.name;
-        finalPlaceAddress = selectedPlace.address;
-        finalPlaceId = selectedPlace.placeId;
+    // Get search results for potential matching
+    const searchResults = await getSearchResults(callId);
+
+    // If placeNumber is provided, get the place from recent search results by index
+    if (placeNumber && searchResults && searchResults.length >= placeNumber) {
+      const selectedPlace = searchResults[placeNumber - 1]; // Array is 0-indexed
+      finalPlaceName = selectedPlace.name;
+      finalPlaceAddress = selectedPlace.address;
+      finalPlaceId = selectedPlace.placeId;
+    }
+    // If we have a place name but missing address/placeId, try to find it in search results
+    else if (finalPlaceName && (!finalPlaceAddress || !finalPlaceId) && searchResults) {
+      // Try to find a matching place by name (case-insensitive partial match)
+      const matchingPlace = searchResults.find(place => 
+        place.name.toLowerCase().includes(finalPlaceName!.toLowerCase()) ||
+        finalPlaceName!.toLowerCase().includes(place.name.toLowerCase())
+      );
+      
+      if (matchingPlace) {
+        console.log(`Found matching place in search results: ${matchingPlace.name}`);
+        finalPlaceName = matchingPlace.name;
+        finalPlaceAddress = matchingPlace.address;
+        finalPlaceId = matchingPlace.placeId;
       } else {
-        return {
-          message:
-            "I couldn't find that place number in your recent search results. Could you tell me the name of the place you'd like directions to?",
-          error: true,
-        };
+        console.log(`No matching place found for "${finalPlaceName}" in recent search results`);
       }
-    } else {
-      console.log();
+    }
+    // Handle case where placeNumber was provided but not found
+    else if (placeNumber && (!searchResults || searchResults.length < placeNumber)) {
+      return {
+        message:
+          "I couldn't find that place number in your recent search results. Could you tell me the name of the place you'd like details about?",
+        error: true,
+      };
     }
 
     // Validate that we have the required information
@@ -97,33 +113,38 @@ export async function wandaGetPlaceDetails({
 
       let placeIdToSearch = finalPlaceId;
 
-      // If we don't have a placeId, we might need to do a "Find Place" request first
-      // This example will primarily focus on having a placeId.
-      // A "Find Place" request would look like:
-      // `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(finalPlaceName)}&inputtype=textquery&fields=place_id&key=${apiKey}`
-      // For simplicity, we'll assume if placeId is missing, we might not get the best result or might error.
-
+      // If we don't have a placeId, try to find one using the Find Place API
       if (!placeIdToSearch && finalPlaceName) {
-        // Attempt to find place by name if ID is missing (less reliable for details)
-        // This is a simplified approach. A robust solution would first call Find Place, then Place Details.
-        console.warn(
-          `Attempting place details lookup without a specific placeId for: ${finalPlaceName}. Results may be less accurate or require a Find Place API call first to get a place_id.`
-        );
-        // For this example, we'll proceed, but Google's Place Details API strongly prefers a place_id.
-        // If you *only* have name/address, you should use the "Find Place" API first to get a place_id,
-        // then use that place_id for the "Place Details" request.
-        // For now, we'll just inform the user if the crucial ID is missing.
-        // A more robust implementation would make a Find Place call here.
+        console.log(`No placeId available, attempting to find place ID for: ${finalPlaceName}`);
+        
+        const findPlaceQuery = finalPlaceAddress 
+          ? `${finalPlaceName} ${finalPlaceAddress}` 
+          : finalPlaceName;
+        
+        const findPlaceUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(findPlaceQuery)}&inputtype=textquery&fields=place_id&key=${apiKey}`;
+        
+        try {
+          const findPlaceResponse = await fetch(findPlaceUrl);
+          const findPlaceData = await findPlaceResponse.json();
+          
+          if (findPlaceResponse.ok && findPlaceData.status === "OK" && findPlaceData.candidates && findPlaceData.candidates.length > 0) {
+            placeIdToSearch = findPlaceData.candidates[0].place_id;
+            console.log(`Found place ID: ${placeIdToSearch}`);
+          } else {
+            console.warn(`Find Place API did not return a place ID for: ${findPlaceQuery}. Status: ${findPlaceData.status}`);
+          }
+        } catch (findPlaceError) {
+          console.error(`Error calling Find Place API for "${findPlaceQuery}":`, findPlaceError);
+        }
       }
 
+      // If we still don't have a placeId, we cannot proceed with Place Details API
       if (!placeIdToSearch) {
-        // If after all checks, placeIdToSearch is still undefined, we cannot proceed with Place Details API.
-        // A Find Place request would be needed first.
         console.error(
           `Cannot perform Place Details lookup without a place_id. Name: "${finalPlaceName}"`
         );
         return {
-          message: `I found "${finalPlaceName}", but I need a more specific identifier (a place ID) to get its full details. Sometimes this happens with general names. Could you try a more specific search or provide more context?`,
+          message: `I found "${finalPlaceName}", but I couldn't get a specific identifier to fetch its full details. This sometimes happens with general names. Could you try a more specific search or provide the address?`,
           error: true,
         };
       }
@@ -135,8 +156,9 @@ export async function wandaGetPlaceDetails({
         "opening_hours",
         "website",
         "rating",
-        "place_id", // Good to request it to confirm, or if you got it from a different source
-        "business_status", // Useful to know if it's operational
+        "place_id",
+        "business_status",
+        "user_ratings_total",
       ].join(",");
 
       const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(
@@ -174,53 +196,57 @@ export async function wandaGetPlaceDetails({
 
       const messageParts: string[] = [];
       messageParts.push(
-        `Okay, here are some details for ${result.name || finalPlaceName}:`
+        `Here are the details for ${result.name || finalPlaceName}:`
       );
 
       if (result.formatted_address) {
-        messageParts.push(`Address: ${result.formatted_address}.`);
+        messageParts.push(`\nAddress: ${result.formatted_address}`);
       }
+      
       if (result.international_phone_number) {
-        messageParts.push(
-          `Phone number: ${result.international_phone_number}.`
-        );
+        messageParts.push(`\nPhone: ${result.international_phone_number}`);
       }
+      
       if (result.rating) {
-        messageParts.push(
-          `It has a rating of ${result.rating} out of 5 stars.`
-        );
+        const ratingText = result.user_ratings_total 
+          ? `\nRating: ${result.rating}/5 stars (${result.user_ratings_total} reviews)`
+          : `\nRating: ${result.rating}/5 stars`;
+        messageParts.push(ratingText);
       }
+      
       if (result.business_status) {
         if (result.business_status === "OPERATIONAL") {
-          messageParts.push("It's currently operational.");
+          messageParts.push(`\nStatus: Currently operational`);
         } else {
           messageParts.push(
-            `Its status is: ${result.business_status
+            `\nStatus: ${result.business_status
               .toLowerCase()
-              .replace("_", " ")}.`
+              .replace("_", " ")}`
           );
         }
       }
+      
       if (result.opening_hours) {
         if (result.opening_hours.open_now !== undefined) {
           messageParts.push(
-            `Right now, it's ${
-              result.opening_hours.open_now ? "open" : "closed"
-            }.`
+            `\nCurrently: ${
+              result.opening_hours.open_now ? "Open" : "Closed"
+            }`
           );
         }
         if (
           result.opening_hours.weekday_text &&
           result.opening_hours.weekday_text.length > 0
         ) {
-          messageParts.push("The hours are usually:");
+          messageParts.push(`\nHours:`);
           result.opening_hours.weekday_text.forEach((line: string) => {
             messageParts.push(`  ${line}`);
           });
         }
       }
+      
       if (result.website) {
-        messageParts.push(`You can find their website at: ${result.website}.`);
+        messageParts.push(`\nWebsite: ${result.website}`);
       }
 
       if (messageParts.length <= 1) {
@@ -234,7 +260,7 @@ export async function wandaGetPlaceDetails({
       }
 
       return {
-        message: messageParts.join("\n"),
+        message: messageParts.join(""),
         error: false,
       };
     } catch (apiCallError: any) {
@@ -261,11 +287,8 @@ export async function wandaGetPlaceDetails({
     }
   } catch (error: any) {
     console.error(`Error in wandaGetPlaceDetails for callId ${callId}:`, error);
-    // This outer catch is for errors *before* the API call section, like DB issues.
-    // The Twilio-specific logging was from a different context (sending SMS) and might not be relevant here.
-    // I'll make it more generic.
+    
     if (error.code && error.message) {
-      // General error properties
       console.error("Error details:", {
         code: error.code,
         message: error.message,

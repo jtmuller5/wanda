@@ -68,18 +68,28 @@ export async function wandaSearchMaps({
 
   // Enhance query with food preferences if it's a food-related search
   let enhancedQuery = query;
-  if (callerProfile?.foodPreferences && callerProfile.foodPreferences.length > 0) {
-    const isFood = /restaurant|food|eat|dining|cuisine|lunch|dinner|breakfast|cafe|coffee/i.test(query);
+  if (
+    callerProfile?.foodPreferences &&
+    callerProfile.foodPreferences.length > 0
+  ) {
+    const isFood =
+      /restaurant|food|eat|dining|cuisine|lunch|dinner|breakfast|cafe|coffee/i.test(
+        query
+      );
     if (isFood) {
       // Add preferences to help with relevance
       const preferences = callerProfile.foodPreferences.slice(0, 2).join(" "); // Limit to avoid overly long queries
       enhancedQuery = `${query} ${preferences}`;
-      console.log(`Enhanced food search query with preferences: ${enhancedQuery}`);
+      console.log(
+        `Enhanced food search query with preferences: ${enhancedQuery}`
+      );
     }
   }
 
   // Construct the search query - combine query with location for better results
-  const textQuery = searchLocation ? `${enhancedQuery} in ${searchLocation}` : enhancedQuery;
+  const textQuery = searchLocation
+    ? `${enhancedQuery} in ${searchLocation}`
+    : enhancedQuery;
 
   // Prepare the request body for the new API
   const requestBody: any = {
@@ -104,7 +114,7 @@ export async function wandaSearchMaps({
         "Content-Type": "application/json",
         "X-Goog-Api-Key": apiKey,
         "X-Goog-FieldMask":
-          "places.displayName,places.formattedAddress,places.id",
+          "places.displayName,places.formattedAddress,places.id,places.editorialSummary",
       },
       body: JSON.stringify(requestBody),
     });
@@ -127,7 +137,10 @@ export async function wandaSearchMaps({
 
     const data: GoogleMapsNewApiResponse = await response.json();
 
-    console.log("Parsed data from Google Maps API (New):", data);
+    console.log(
+      "Parsed data from Google Maps API (New):",
+      JSON.stringify(data)
+    );
 
     if (!data.places || data.places.length === 0) {
       console.log("No places found for the query:", textQuery);
@@ -143,12 +156,13 @@ export async function wandaSearchMaps({
     const formattedPlaces = topResults
       .map((place, index) => {
         const name = place.displayName?.text || "Unknown Place";
+        const summary = place.editorialSummary?.text || "";
         const address = place.formattedAddress
           ? ` at ${place.formattedAddress}`
           : "";
-        return `${name}`; // ${address}
+        return `${index + 1} - ${name}: ${summary}`; // ${address}
       })
-      .join(", ");
+      .join("\n");
 
     console.log("Formatted places:", formattedPlaces);
 
@@ -161,17 +175,20 @@ export async function wandaSearchMaps({
 
     // Build personalized response message
     let responseMessage = `I found the following places:\n${formattedPlaces}`;
-    
+
     // Add personalized context if we used profile information
     if (callerProfile) {
-      if (searchLocation === callerProfile.city && location !== callerProfile.city) {
+      if (
+        searchLocation === callerProfile.city &&
+        location !== callerProfile.city
+      ) {
         responseMessage += `\n\n(I used ${callerProfile.city} from your profile since you didn't specify a location)`;
       }
       if (enhancedQuery !== query && callerProfile.foodPreferences?.length) {
         responseMessage += `\n\n(I factored in your food preferences to find better matches)`;
       }
     }
-    
+
     responseMessage += `\n\nWould you like me to send you directions to any of these places?`;
 
     return {
