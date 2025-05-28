@@ -138,8 +138,12 @@ export async function getSearchResults(callId: string): Promise<Array<{
 
 export async function getCallerProfile(phoneNumber: string): Promise<{
   name?: string;
+  age?: number;
   city?: string;
   foodPreferences?: string[];
+  activitiesPreferences?: string[];
+  shoppingPreferences?: string[];
+  entertainmentPreferences?: string[];
   createdAt: string;
   updatedAt?: string;
 } | null> {
@@ -150,8 +154,12 @@ export async function getCallerProfile(phoneNumber: string): Promise<{
     if (callerDoc.exists) {
       return callerDoc.data() as {
         name?: string;
+        age?: number;
         city?: string;
         foodPreferences?: string[];
+        activitiesPreferences?: string[];
+        shoppingPreferences?: string[];
+        entertainmentPreferences?: string[];
         createdAt: string;
         updatedAt?: string;
       };

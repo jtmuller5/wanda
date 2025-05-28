@@ -6,6 +6,7 @@ import { Vapi } from "@vapi-ai/server-sdk";
 import { wandaGetPlaceDetails } from "../responses/wandaGetPlaceDetailsResponse";
 import { wandaUpdateProfile } from "../responses/wandaUpdateProfileResponse";
 import { wandaGetProfile } from "../responses/wandaGetProfileResponse";
+import { wandaUpdatePreferences } from "../responses/wandaUpdatePreferencesResponse";
 
 export async function handleFunctionCall(
   functionCall: Vapi.ServerMessageToolCalls,
@@ -121,9 +122,8 @@ export async function handleFunctionCall(
         const { message, error } = await wandaUpdateProfile({
           callId,
           name: parameters.name as string | undefined,
+          age: parameters.age as number | undefined,
           city: parameters.city as string | undefined,
-          foodPreferences: parameters.foodPreferences as string[] | undefined,
-          addToFoodPreferences: parameters.addToFoodPreferences as boolean | undefined,
         });
 
         res.status(200).json({
@@ -142,6 +142,36 @@ export async function handleFunctionCall(
               toolCallId: functionCall.toolCallList[0].id,
               result:
                 "I'm sorry, I couldn't update your profile right now. Please try again later.",
+            },
+          ],
+        });
+      }
+      break;
+    case "wandaUpdatePreferences":
+      try {
+        const { message, error } = await wandaUpdatePreferences({
+          callId,
+          preferenceType: parameters.preferenceType as "food" | "activities" | "shopping" | "entertainment",
+          action: parameters.action as "add" | "remove" | "replace",
+          preferences: parameters.preferences as string[],
+        });
+
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result: message,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error updating preferences:", error);
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result:
+                "I'm sorry, I couldn't update your preferences right now. Please try again later.",
             },
           ],
         });

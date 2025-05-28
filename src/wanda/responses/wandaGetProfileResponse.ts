@@ -55,6 +55,10 @@ export async function wandaGetProfile({
       profileParts.push(`• Name: ${profile.name}`);
     }
 
+    if (profile.age) {
+      profileParts.push(`• Age: ${profile.age}`);
+    }
+
     if (profile.city) {
       profileParts.push(`• City: ${profile.city}`);
     }
@@ -62,6 +66,21 @@ export async function wandaGetProfile({
     if (profile.foodPreferences && profile.foodPreferences.length > 0) {
       const preferences = profile.foodPreferences.join(", ");
       profileParts.push(`• Food preferences: ${preferences}`);
+    }
+
+    if (profile.activitiesPreferences && profile.activitiesPreferences.length > 0) {
+      const preferences = profile.activitiesPreferences.join(", ");
+      profileParts.push(`• Activity preferences: ${preferences}`);
+    }
+
+    if (profile.shoppingPreferences && profile.shoppingPreferences.length > 0) {
+      const preferences = profile.shoppingPreferences.join(", ");
+      profileParts.push(`• Shopping preferences: ${preferences}`);
+    }
+
+    if (profile.entertainmentPreferences && profile.entertainmentPreferences.length > 0) {
+      const preferences = profile.entertainmentPreferences.join(", ");
+      profileParts.push(`• Entertainment preferences: ${preferences}`);
     }
 
     if (profileParts.length === 1) {

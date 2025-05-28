@@ -14,7 +14,7 @@ export function wandaUpdateProfileTool(
     },
     function: {
       name: "wandaUpdateProfile",
-      description: "Update the caller's profile with new information like name, city, or food preferences.",
+      description: "Update the caller's basic profile information like name, age, and city. Use wandaUpdatePreferences for managing preference arrays.",
       parameters: {
         type: "object",
         properties: {
@@ -22,20 +22,13 @@ export function wandaUpdateProfileTool(
             type: "string",
             description: "The caller's name.",
           },
+          age: {
+            type: "number",
+            description: "The caller's age.",
+          },
           city: {
             type: "string",
             description: "The caller's city or location.",
-          },
-          foodPreferences: {
-            type: "array",
-            items: {
-              type: "string"
-            },
-            description: "List of food preferences or cuisines the caller likes (e.g., 'Italian', 'Vegetarian', 'Spicy food').",
-          },
-          addToFoodPreferences: {
-            type: "boolean",
-            description: "Whether to add to existing food preferences (true) or replace them (false). Defaults to true.",
           },
         },
         required: [],

@@ -3,15 +3,13 @@ import { db } from "../../services/firebase";
 export async function wandaUpdateProfile({
   callId,
   name,
+  age,
   city,
-  foodPreferences,
-  addToFoodPreferences = true,
 }: {
   callId: string;
   name?: string;
+  age?: number;
   city?: string;
-  foodPreferences?: string[];
-  addToFoodPreferences?: boolean;
 }): Promise<{
   message: string;
   error: boolean;
@@ -19,9 +17,8 @@ export async function wandaUpdateProfile({
   console.log("wandaUpdateProfile called with parameters:", {
     callId,
     name,
+    age,
     city,
-    foodPreferences,
-    addToFoodPreferences,
   });
 
   try {
@@ -53,16 +50,6 @@ export async function wandaUpdateProfile({
     const phoneNumberId = callerPhoneNumber.replace("+1", "");
     const callerRef = db.collection("callers").doc(phoneNumberId);
 
-    // Get existing caller data
-    const callerDoc = await callerRef.get();
-    const existingData = callerDoc.exists
-      ? (callerDoc.data() as {
-          name?: string;
-          city?: string;
-          foodPreferences?: string[];
-        })
-      : {};
-
     // Prepare update data
     const updateData: any = {
       updatedAt: new Date().toISOString(),
@@ -76,42 +63,16 @@ export async function wandaUpdateProfile({
       updatedFields.push("name");
     }
 
+    // Update age if provided
+    if (age && age > 0 && age < 150) {
+      updateData.age = age;
+      updatedFields.push("age");
+    }
+
     // Update city if provided
     if (city && city.trim()) {
       updateData.city = city.trim();
       updatedFields.push("city");
-    }
-
-    // Update food preferences if provided
-    if (foodPreferences && foodPreferences.length > 0) {
-      const cleanedPreferences = foodPreferences
-        .filter((pref) => pref && pref.trim())
-        .map((pref) => pref.trim().toLowerCase());
-
-      if (cleanedPreferences.length > 0) {
-        if (addToFoodPreferences && existingData.foodPreferences) {
-          // Add to existing preferences, avoiding duplicates
-          const existingPrefs = Array.isArray(existingData.foodPreferences)
-            ? existingData.foodPreferences.map((p: string) => p.toLowerCase())
-            : [];
-
-          const uniqueNewPrefs = cleanedPreferences.filter(
-            (pref) => !existingPrefs.includes(pref)
-          );
-
-          if (uniqueNewPrefs.length > 0) {
-            updateData.foodPreferences = [
-              ...(existingData.foodPreferences || []),
-              ...uniqueNewPrefs,
-            ];
-            updatedFields.push("food preferences");
-          }
-        } else {
-          // Replace existing preferences
-          updateData.foodPreferences = cleanedPreferences;
-          updatedFields.push("food preferences");
-        }
-      }
     }
 
     // Check if there's anything to update
@@ -129,20 +90,16 @@ export async function wandaUpdateProfile({
 
     // Build success message
     let message = "Great! I've updated your profile with your ";
-
+    
     if (updatedFields.length === 1) {
       message += updatedFields[0];
     } else if (updatedFields.length === 2) {
       message += `${updatedFields[0]} and ${updatedFields[1]}`;
     } else {
-      message +=
-        updatedFields.slice(0, -1).join(", ") +
-        ", and " +
-        updatedFields[updatedFields.length - 1];
+      message += updatedFields.slice(0, -1).join(", ") + ", and " + updatedFields[updatedFields.length - 1];
     }
-
-    message +=
-      ". This will help me give you better recommendations in the future!";
+    
+    message += ". This will help me give you better recommendations in the future!";
 
     return {
       message,
@@ -152,8 +109,7 @@ export async function wandaUpdateProfile({
     console.error(`Error updating profile for call ${callId}:`, error);
 
     return {
-      message:
-        "I'm sorry, I couldn't update your profile right now. Please try again later.",
+      message: "I'm sorry, I couldn't update your profile right now. Please try again later.",
       error: true,
     };
   }

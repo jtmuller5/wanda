@@ -2,6 +2,7 @@ import { Vapi } from "@vapi-ai/server-sdk";
 import { SearchTransfer } from "../transfers/SearchTransfer";
 import { wandaUpdateProfileTool } from "../tools/wandaUpdateProfile";
 import { wandaGetProfileTool } from "../tools/wandaGetProfile";
+import { wandaUpdatePreferencesTool } from "../tools/wandaUpdatePreferences";
 
 export const createProfileAssistant = (
   model: string,
@@ -15,7 +16,11 @@ export const createProfileAssistant = (
       model,
       temperature: 0.1,
       provider: modelProvider,
-      tools: [wandaUpdateProfileTool(host), wandaGetProfileTool(host)],
+      tools: [
+        wandaUpdateProfileTool(host),
+        wandaGetProfileTool(host),
+        wandaUpdatePreferencesTool(host),
+      ],
       messages: [
         {
           role: "system",
@@ -37,16 +42,16 @@ You are Wanda, a local guide and personal assistant. Your role is to help users 
 2. Ask the user how you can assist with their personal profile or preference updates.  
 3. If they want to see their current profile, use the 'wandaGetProfile' tool to show what information is saved.  
 4. If a user requests profile updates, guide them through the process:  
-   - Ask what information they'd like to update (name, city/location, food preferences)  
+   - Ask what information they'd like to update (name, age, city, or preferences)  
+   - For basic info (name, age, city), use the 'wandaUpdateProfile' tool  
+   - For preferences (food, activities, shopping, entertainment), use the 'wandaUpdatePreferences' tool  
    - Collect the necessary information one field at a time  
-   - For food preferences, ask about specific cuisines, dietary restrictions, or types of food they enjoy  
    - Confirm the collected information with the user before updating  
-   - Use the 'wandaUpdateProfile' tool to apply changes  
-   - Let them know their preferences will help with future recommendations  
+   - Let them know their information will help with future recommendations  
 5. You can help users update these profile fields:  
-   - Name: Their preferred name for personalized service  
-   - City: Their current location or city they want recommendations for  
-   - Food Preferences: Cuisines they like (Italian, Mexican, Thai, etc.), dietary needs (vegetarian, vegan, gluten-free), or food types (spicy, seafood, etc.)  
+   - Basic Info: Name, age, city (use wandaUpdateProfile)  
+   - Preferences: Food, activities, shopping, entertainment (use wandaUpdatePreferences)  
+   - For preferences, you can add, remove, or replace items in each category  
 6. < wait for user response >  
 7. Offer additional assistance if requested or conclude the session politely.
 
