@@ -87,6 +87,8 @@ app.post("/wanda", async (req, res) => {
     callerFoodPreferences: caller?.foodPreferences || [],
   };
 
+  console.log("Variable values for Wanda:", variableValues);
+
   try {
     const modelProvider: "google" | "openai" = "openai";
     const model: "gemini-2.0-flash" | "gpt-4o-2024-11-20" = "gpt-4o-2024-11-20";
