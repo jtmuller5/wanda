@@ -1,13 +1,21 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import PhoneVerificationModal from './PhoneVerificationModal'
 
 export default function Hero() {
   const [phoneNumber, setPhoneNumber] = useState('')
+  const [showVerificationModal, setShowVerificationModal] = useState(false)
+  const navigate = useNavigate()
 
   const handleGetStarted = () => {
-    if (phoneNumber) {
-      // TODO: Implement phone number login/registration
-      console.log('Getting started with:', phoneNumber)
+    if (phoneNumber && phoneNumber.length >= 14) {
+      setShowVerificationModal(true)
     }
+  }
+
+  const handleVerificationSuccess = () => {
+    setShowVerificationModal(false)
+    navigate('/dashboard')
   }
 
   const formatPhoneNumber = (value: string) => {
@@ -132,6 +140,14 @@ export default function Hero() {
           </div>
         </div>
       </div>
+
+      {/* Phone Verification Modal */}
+      <PhoneVerificationModal
+        isOpen={showVerificationModal}
+        onClose={() => setShowVerificationModal(false)}
+        phoneNumber={phoneNumber}
+        onSuccess={handleVerificationSuccess}
+      />
     </div>
   )
 }
