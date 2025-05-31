@@ -10,10 +10,10 @@ This system automatically extracts and updates user preferences from phone call 
 - **Location**: `src/index.ts` - Squad analysis plan configuration
 - **Trigger**: Automatically runs at the end of each call
 - **Schema**: Extracts 4 categories of preferences:
-  - `foodPreferences`: Cuisines, dietary restrictions (e.g., "Italian", "Vegetarian", "Gluten-free")
-  - `activitiesPreferences`: Hobbies, activities (e.g., "Hiking", "Museums", "Sports")
-  - `shoppingPreferences`: Shopping categories (e.g., "Books", "Fashion", "Electronics")
-  - `entertainmentPreferences`: Entertainment types (e.g., "Live music", "Theater", "Movies")
+  - `food_preferences`: Cuisines, dietary restrictions (e.g., "Italian", "Vegetarian", "Gluten-free")
+  - `activity_preferences`: Hobbies, activities (e.g., "Hiking", "Museums", "Sports")
+  - `shopping_preferences`: Shopping categories (e.g., "Books", "Fashion", "Electronics")
+  - `entertainment_preferences`: Entertainment types (e.g., "Live music", "Theater", "Movies")
 
 ### 2. Data Processing
 - **Location**: `src/wanda/event-handlers/handleEndOfCallReport.ts`
@@ -49,7 +49,7 @@ schema: {
   properties: {
     // Add or modify preference categories here
   },
-  required: ["foodPreferences", "activitiesPreferences", "shoppingPreferences", "entertainmentPreferences"]
+  required: ["food_preferences", "activity_preferences", "shopping_preferences", "entertainment_preferences"]
 }
 ```
 

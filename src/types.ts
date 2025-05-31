@@ -261,8 +261,8 @@ export interface VapiCall {
 }
 
 export interface CallAnalysisStructuredData {
-  foodPreferences: string[];
-  activitiesPreferences: string[];
-  shoppingPreferences: string[];
-  entertainmentPreferences: string[];
+  food_preferences: string[];
+  activity_preferences: string[];
+  shopping_preferences: string[];
+  entertainment_preferences: string[];
 }

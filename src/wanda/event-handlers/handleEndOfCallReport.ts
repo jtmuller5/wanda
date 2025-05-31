@@ -1,4 +1,8 @@
-import { db, updateCallRecordingUrl, updateCallerPreferencesFromCall } from "../../services/firebase";
+import {
+  db,
+  updateCallRecordingUrl,
+  updateCallerPreferencesFromCall,
+} from "../../services/firebase";
 import { VapiCall, CallAnalysisStructuredData } from "../../types";
 import { Response } from "express";
 
@@ -33,7 +37,7 @@ export async function handleEndOfCallReport(
 
     if (callSnapshot.exists) {
       const callData = callSnapshot.data();
-      
+
       await db
         .collection("calls")
         .doc(message.call.id)
@@ -54,38 +58,57 @@ export async function handleEndOfCallReport(
       }
 
       // Process structured data to update caller preferences
-      if (message.call.analysis?.structuredData && callData?.callerPhoneNumber) {
-        const structuredData = message.call.analysis.structuredData as CallAnalysisStructuredData;
+      if (
+        message.call.analysis?.structuredData &&
+        callData?.callerPhoneNumber
+      ) {
+        const structuredData = message.call.analysis
+          .structuredData as CallAnalysisStructuredData;
         const phoneNumberId = callData.callerPhoneNumber.replace("+1", "");
-        
-        console.log(`Processing structured data for caller ${phoneNumberId}:`, structuredData);
-        
+
+        console.log(
+          `Processing structured data for caller ${phoneNumberId}:`,
+          structuredData
+        );
+
         // Only update if there's meaningful data (at least one non-empty array)
-        const hasNewPreferences = 
-          (structuredData.foodPreferences && structuredData.foodPreferences.length > 0) ||
-          (structuredData.activitiesPreferences && structuredData.activitiesPreferences.length > 0) ||
-          (structuredData.shoppingPreferences && structuredData.shoppingPreferences.length > 0) ||
-          (structuredData.entertainmentPreferences && structuredData.entertainmentPreferences.length > 0);
-        
+        const hasNewPreferences =
+          (structuredData.food_preferences &&
+            structuredData.food_preferences.length > 0) ||
+          (structuredData.activity_preferences &&
+            structuredData.activity_preferences.length > 0) ||
+          (structuredData.shopping_preferences &&
+            structuredData.shopping_preferences.length > 0) ||
+          (structuredData.entertainment_preferences &&
+            structuredData.entertainment_preferences.length > 0);
+
         if (hasNewPreferences) {
           try {
             await updateCallerPreferencesFromCall({
               phoneNumber: phoneNumberId,
               preferences: {
-                foodPreferences: structuredData.foodPreferences,
-                activitiesPreferences: structuredData.activitiesPreferences,
-                shoppingPreferences: structuredData.shoppingPreferences,
-                entertainmentPreferences: structuredData.entertainmentPreferences,
+                foodPreferences: structuredData.food_preferences,
+                activitiesPreferences: structuredData.activity_preferences,
+                shoppingPreferences: structuredData.shopping_preferences,
+                entertainmentPreferences:
+                  structuredData.entertainment_preferences,
               },
             });
-            
-            console.log(`Successfully updated preferences for caller ${phoneNumberId}`);
+
+            console.log(
+              `Successfully updated preferences for caller ${phoneNumberId}`
+            );
           } catch (preferencesError) {
-            console.error(`Error updating preferences for caller ${phoneNumberId}:`, preferencesError);
+            console.error(
+              `Error updating preferences for caller ${phoneNumberId}:`,
+              preferencesError
+            );
             // Don't fail the entire process if preference update fails
           }
         } else {
-          console.log(`No new preferences found in structured data for caller ${phoneNumberId}`);
+          console.log(
+            `No new preferences found in structured data for caller ${phoneNumberId}`
+          );
         }
       } else {
         console.log(`No structured data available for call ${message.call.id}`);
