@@ -136,6 +136,56 @@ app.post("/wanda", async (req, res) => {
       squad: {
         members,
         membersOverrides: {
+          analysisPlan: {
+            structuredDataPlan: {
+              enabled: true,
+              timeoutSeconds: 30,
+              schema: {
+                type: "object",
+                properties: {
+                  foodPreferences: {
+                    type: "array",
+                    items: {
+                      type: "string"
+                    },
+                    description: "List of food preferences, cuisines, or dietary restrictions mentioned by the caller (e.g., 'Italian', 'Vegetarian', 'Spicy food', 'Gluten-free')"
+                  },
+                  activitiesPreferences: {
+                    type: "array",
+                    items: {
+                      type: "string"
+                    },
+                    description: "List of activities or hobbies the caller is interested in (e.g., 'Hiking', 'Museums', 'Sports', 'Concerts')"
+                  },
+                  shoppingPreferences: {
+                    type: "array",
+                    items: {
+                      type: "string"
+                    },
+                    description: "List of shopping preferences mentioned (e.g., 'Antiques', 'Books', 'Fashion', 'Electronics')"
+                  },
+                  entertainmentPreferences: {
+                    type: "array",
+                    items: {
+                      type: "string"
+                    },
+                    description: "List of entertainment preferences (e.g., 'Movies', 'Live music', 'Comedy shows', 'Theater')"
+                  }
+                },
+                required: ["foodPreferences", "activitiesPreferences", "shoppingPreferences", "entertainmentPreferences"]
+              },
+              messages: [
+                {
+                  role: "system",
+                  content: "You are an expert at extracting user preferences from conversation transcripts. Analyze the call transcript and extract any preferences the caller mentioned about food, activities, shopping, or entertainment. Return empty arrays if no relevant preferences were mentioned in each category. Be specific and include dietary restrictions, cuisine types, activity types, shopping categories, and entertainment preferences. Only include preferences that were explicitly mentioned or clearly implied by the caller."
+                },
+                {
+                  role: "user",
+                  content: "Here is the transcript:\n\n{{transcript}}\n\nEnded reason: {{endedReason}}\n\nExtract the caller's preferences and return the structured data as JSON."
+                }
+              ]
+            }
+          },
           transcriber: {
             language: "en",
             smartFormat: true,

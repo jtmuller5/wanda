@@ -1,5 +1,5 @@
-import { db, updateCallRecordingUrl } from "../../services/firebase";
-import { VapiCall } from "../../types";
+import { db, updateCallRecordingUrl, updateCallerPreferencesFromCall } from "../../services/firebase";
+import { VapiCall, CallAnalysisStructuredData } from "../../types";
 import { Response } from "express";
 
 interface VapiEndOfCallReportMessage {
@@ -32,6 +32,8 @@ export async function handleEndOfCallReport(
       .get();
 
     if (callSnapshot.exists) {
+      const callData = callSnapshot.data();
+      
       await db
         .collection("calls")
         .doc(message.call.id)
@@ -49,6 +51,44 @@ export async function handleEndOfCallReport(
           callSid: message.call.id,
           url: message.recordingUrl,
         });
+      }
+
+      // Process structured data to update caller preferences
+      if (message.call.analysis?.structuredData && callData?.callerPhoneNumber) {
+        const structuredData = message.call.analysis.structuredData as CallAnalysisStructuredData;
+        const phoneNumberId = callData.callerPhoneNumber.replace("+1", "");
+        
+        console.log(`Processing structured data for caller ${phoneNumberId}:`, structuredData);
+        
+        // Only update if there's meaningful data (at least one non-empty array)
+        const hasNewPreferences = 
+          (structuredData.foodPreferences && structuredData.foodPreferences.length > 0) ||
+          (structuredData.activitiesPreferences && structuredData.activitiesPreferences.length > 0) ||
+          (structuredData.shoppingPreferences && structuredData.shoppingPreferences.length > 0) ||
+          (structuredData.entertainmentPreferences && structuredData.entertainmentPreferences.length > 0);
+        
+        if (hasNewPreferences) {
+          try {
+            await updateCallerPreferencesFromCall({
+              phoneNumber: phoneNumberId,
+              preferences: {
+                foodPreferences: structuredData.foodPreferences,
+                activitiesPreferences: structuredData.activitiesPreferences,
+                shoppingPreferences: structuredData.shoppingPreferences,
+                entertainmentPreferences: structuredData.entertainmentPreferences,
+              },
+            });
+            
+            console.log(`Successfully updated preferences for caller ${phoneNumberId}`);
+          } catch (preferencesError) {
+            console.error(`Error updating preferences for caller ${phoneNumberId}:`, preferencesError);
+            // Don't fail the entire process if preference update fails
+          }
+        } else {
+          console.log(`No new preferences found in structured data for caller ${phoneNumberId}`);
+        }
+      } else {
+        console.log(`No structured data available for call ${message.call.id}`);
       }
 
       console.log(

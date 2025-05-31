@@ -163,3 +163,79 @@ export async function getCallerProfile(phoneNumber: string): Promise<{
     return null;
   }
 }
+
+export async function updateCallerPreferencesFromCall({
+  phoneNumber,
+  preferences,
+}: {
+  phoneNumber: string;
+  preferences: {
+    foodPreferences?: string[];
+    activitiesPreferences?: string[];
+    shoppingPreferences?: string[];
+    entertainmentPreferences?: string[];
+  };
+}): Promise<void> {
+  try {
+    const callerRef = db.collection("callers").doc(phoneNumber);
+    const callerDoc = await callerRef.get();
+    
+    let existingPreferences = {
+      foodPreferences: [] as string[],
+      activitiesPreferences: [] as string[],
+      shoppingPreferences: [] as string[],
+      entertainmentPreferences: [] as string[],
+    };
+    
+    if (callerDoc.exists) {
+      const data = callerDoc.data();
+      existingPreferences = {
+        foodPreferences: data?.foodPreferences || [],
+        activitiesPreferences: data?.activitiesPreferences || [],
+        shoppingPreferences: data?.shoppingPreferences || [],
+        entertainmentPreferences: data?.entertainmentPreferences || [],
+      };
+    }
+    
+    // Merge new preferences with existing ones, avoiding duplicates
+    const updateData: any = {
+      updatedAt: new Date().toISOString(),
+      lastCalledAt: new Date().toISOString(),
+    };
+    
+    // Helper function to merge arrays and remove duplicates (case-insensitive)
+    const mergePreferences = (existing: string[], newPrefs: string[] = []): string[] => {
+      const combined = [...existing];
+      newPrefs.forEach(pref => {
+        const normalized = pref.trim().toLowerCase();
+        if (!combined.some(existing => existing.toLowerCase() === normalized)) {
+          combined.push(pref.trim());
+        }
+      });
+      return combined;
+    };
+    
+    if (preferences.foodPreferences && preferences.foodPreferences.length > 0) {
+      updateData.foodPreferences = mergePreferences(existingPreferences.foodPreferences, preferences.foodPreferences);
+    }
+    
+    if (preferences.activitiesPreferences && preferences.activitiesPreferences.length > 0) {
+      updateData.activitiesPreferences = mergePreferences(existingPreferences.activitiesPreferences, preferences.activitiesPreferences);
+    }
+    
+    if (preferences.shoppingPreferences && preferences.shoppingPreferences.length > 0) {
+      updateData.shoppingPreferences = mergePreferences(existingPreferences.shoppingPreferences, preferences.shoppingPreferences);
+    }
+    
+    if (preferences.entertainmentPreferences && preferences.entertainmentPreferences.length > 0) {
+      updateData.entertainmentPreferences = mergePreferences(existingPreferences.entertainmentPreferences, preferences.entertainmentPreferences);
+    }
+    
+    await callerRef.set(updateData, { merge: true });
+    
+    console.log(`Updated caller preferences for ${phoneNumber}:`, updateData);
+  } catch (error) {
+    console.error("Error updating caller preferences:", error);
+    throw error;
+  }
+}

@@ -255,4 +255,14 @@ export interface VapiCall {
     content: string;
     timestamp: number;
   }[];
+  analysis?: {
+    structuredData?: CallAnalysisStructuredData;
+  };
+}
+
+export interface CallAnalysisStructuredData {
+  foodPreferences: string[];
+  activitiesPreferences: string[];
+  shoppingPreferences: string[];
+  entertainmentPreferences: string[];
 }

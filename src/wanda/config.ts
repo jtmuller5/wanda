@@ -6,5 +6,5 @@ export interface WandaVariableValues {
   callerActivitiesPreferences?: string;
   callerShoppingPreferences?: string;
   callerEntertainmentPreferences?: string;
-  newCaller: boolean;
+  newCaller?: boolean;
 }
