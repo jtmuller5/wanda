@@ -26,15 +26,13 @@ export async function handleEndOfCallReport(
   console.log("End of call report message:", message);
 
   try {
-    // Find the institution and location IDs for this call
-    const officeSnapshot = await db
+    const callSnapshot = await db
       .collection("calls")
       .doc(message.call.id)
       .get();
 
-    if (!officeSnapshot.exists) {
+    if (callSnapshot.exists) {
       await db
-
         .collection("calls")
         .doc(message.call.id)
         .update({
