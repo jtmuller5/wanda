@@ -1,16 +1,16 @@
 import { Vapi } from "@vapi-ai/server-sdk";
 import { wandaSearchMapsTool } from "../tools/wandaSearchMaps";
 import { wandaSendDirectionsTool } from "../tools/wandaSendDirections";
-import { ProfileTransfer } from "../transfers/ProfileTransfer";
-import { ReviewTransfer } from "../transfers/ReviewTransfer";
 import { wandaGetPlaceDetailsTool } from "../tools/wandaGetPlaceDetails";
+import { wandaCreateReviewTool } from "../tools/wandaCreateReview";
 import * as fs from "fs";
 import * as path from "path";
+import { SearchTransfer } from "../transfers/SearchTransfer";
 
-const promptFilePath = path.join(__dirname, "./prompts/search_prompt.txt");
+const promptFilePath = path.join(__dirname, "./prompts/review_prompt.txt");
 const prompt = fs.readFileSync(promptFilePath, "utf-8");
 
-export const createSearchAssistant = (
+export const createReviewAssistant = (
   model: string,
   variableValues: Record<string, any>,
   modelProvider: "google" | "openai" = "google",
@@ -24,23 +24,15 @@ export const createSearchAssistant = (
       provider: modelProvider,
       tools: [
         wandaSearchMapsTool(host),
-        wandaSendDirectionsTool(host),
-        wandaGetPlaceDetailsTool(host),
+        wandaCreateReviewTool(host),
         {
           type: "transferCall",
           destinations: [
             {
               message: "",
-              description: ProfileTransfer.transferDescription,
+              description: SearchTransfer.transferDescription,
               type: "assistant",
-              assistantName: ProfileTransfer.destinationAgent,
-              transferMode: "swap-system-message-in-history",
-            },
-            {
-              message: "",
-              description: ReviewTransfer.transferDescription,
-              type: "assistant",
-              assistantName: ReviewTransfer.destinationAgent,
+              assistantName: SearchTransfer.destinationAgent,
               transferMode: "swap-system-message-in-history",
             },
           ],

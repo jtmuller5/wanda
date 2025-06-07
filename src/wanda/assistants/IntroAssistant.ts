@@ -1,5 +1,6 @@
 import { ProfileTransfer } from "../transfers/ProfileTransfer";
 import { SearchTransfer } from "../transfers/SearchTransfer";
+import { ReviewTransfer } from "../transfers/ReviewTransfer";
 import { Vapi } from "@vapi-ai/server-sdk";
 import * as fs from "fs";
 import * as path from "path";
@@ -39,6 +40,13 @@ export const createIntroAssistant = (
               description: ProfileTransfer.transferDescription,
               type: "assistant",
               assistantName: ProfileTransfer.destinationAgent,
+              transferMode: "swap-system-message-in-history",
+            },
+            {
+              message: "",
+              description: ReviewTransfer.transferDescription,
+              type: "assistant",
+              assistantName: ReviewTransfer.destinationAgent,
               transferMode: "swap-system-message-in-history",
             },
           ],

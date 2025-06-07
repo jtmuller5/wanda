@@ -7,6 +7,7 @@ import { wandaGetPlaceDetails } from "../responses/wandaGetPlaceDetailsResponse"
 import { wandaUpdateProfile } from "../responses/wandaUpdateProfileResponse";
 import { wandaGetProfile } from "../responses/wandaGetProfileResponse";
 import { wandaUpdatePreferences } from "../responses/wandaUpdatePreferencesResponse";
+import { wandaCreateReview } from "../responses/wandaCreateReviewResponse";
 
 export async function handleFunctionCall(
   functionCall: Vapi.ServerMessageToolCalls,
@@ -199,6 +200,36 @@ export async function handleFunctionCall(
               toolCallId: functionCall.toolCallList[0].id,
               result:
                 "I'm sorry, I couldn't retrieve your profile right now. Please try again later.",
+            },
+          ],
+        });
+      }
+      break;
+    case "wandaCreateReview":
+      try {
+        const { message, error } = await wandaCreateReview({
+          callId,
+          placeId: parameters.placeId as string,
+          comment: parameters.comment as string,
+          rating: parameters.rating as number,
+        });
+
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result: message,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error creating review:", error);
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result:
+                "I'm sorry, I couldn't save your review right now. Please try again later.",
             },
           ],
         });

@@ -11,6 +11,7 @@ import { handleFunctionCall } from "./wanda/event-handlers/handleFunctionCall";
 import { createIntroAssistant } from "./wanda/assistants/IntroAssistant";
 import { createSearchAssistant } from "./wanda/assistants/SearchAssistant";
 import { createProfileAssistant } from "./wanda/assistants/ProfileAssistant";
+import { createReviewAssistant } from "./wanda/assistants/ReviewAssistant";
 import { Vapi } from "@vapi-ai/server-sdk";
 
 // Create Express application
@@ -120,6 +121,12 @@ app.post("/wanda", async (req, res) => {
         `https://${req.headers.host}`
       ),
       createProfileAssistant(
+        model,
+        variableValues,
+        modelProvider,
+        `https://${req.headers.host}`
+      ),
+      createReviewAssistant(
         model,
         variableValues,
         modelProvider,
@@ -297,6 +304,12 @@ app.post("/wanda-twilio", async (req, res) => {
         `https://${req.headers.host}`
       ),
       createProfileAssistant(
+        model,
+        variableValues,
+        modelProvider,
+        `https://${req.headers.host}`
+      ),
+      createReviewAssistant(
         model,
         variableValues,
         modelProvider,

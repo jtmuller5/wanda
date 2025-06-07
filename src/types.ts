@@ -128,7 +128,7 @@ export interface VapiCallRequest {
 }
 
 export interface AgentTransfer {
-  destinationAgent: "Wanda_Intro" | "Wanda_Search" | "Wanda_Profile";
+  destinationAgent: "Wanda_Intro" | "Wanda_Search" | "Wanda_Profile" | "Wanda_Review";
   transferDescription: string;
 }
 
@@ -265,4 +265,13 @@ export interface CallAnalysisStructuredData {
   activity_preferences: string[];
   shopping_preferences: string[];
   entertainment_preferences: string[];
+}
+
+export interface WandaReview {
+  placeId: string;
+  comment: string;
+  rating: number;
+  phoneNumber: string;
+  createdAt: string;
+  callId: string;
 }
