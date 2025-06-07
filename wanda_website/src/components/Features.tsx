@@ -82,13 +82,7 @@ export default function Features() {
           ))}
         </div>
 
-        {/* Call-to-action */}
-        <div className="text-center mt-16">
-          <div className="inline-flex items-center space-x-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
-            <span className="text-2xl">📞</span>
-            <span className="text-xl font-semibold">Ready to try? Call (843) 648-9138</span>
-          </div>
-        </div>
+       
       </div>
     </section>
   )

@@ -84,10 +84,33 @@ export default function Navigation({ transparent = false }: NavigationProps) {
                   <span className="text-white font-bold text-sm">W</span>
                 </div>
                 
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="hidden sm:block text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Wanda
                 </h1>
               </button>
+            </div>
+
+            {/* Center - Phone Number */}
+            <div className="flex items-center">
+              {/* Desktop version */}
+              <a 
+                href="tel:+18436489138" 
+                className="hidden md:inline-flex items-center px-4 py-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm border border-slate-200 hover:bg-white hover:shadow-md transition-all duration-200 group"
+              >
+                <span className="text-lg font-semibold text-blue-600 group-hover:text-blue-700">
+                  (843) 648-9138
+                </span>
+                <span className="ml-2 text-lg group-hover:animate-bounce">📱</span>
+              </a>
+              
+              {/* Mobile version */}
+              <a 
+                href="tel:+18436489138" 
+                className="md:hidden inline-flex items-center px-3 py-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm border border-slate-200 hover:bg-white hover:shadow-md transition-all duration-200 group"
+                title="Call Wanda: (843) 648-9138"
+              >
+                <span className="text-xl group-hover:animate-bounce">📱</span>
+              </a>
             </div>
 
             {/* Right side - Auth buttons */}

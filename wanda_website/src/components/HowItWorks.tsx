@@ -48,9 +48,7 @@ export default function HowItWorks() {
           {steps.map((step, index) => (
             <div 
               key={index}
-              className={`flex flex-col md:flex-row items-center gap-8 ${
-                index % 2 === 1 ? 'md:flex-row-reverse' : ''
-              }`}
+              className="flex flex-col md:flex-row items-center gap-8"
             >
               {/* Step Content */}
               <div className="flex-1 text-center md:text-left">
@@ -72,9 +70,9 @@ export default function HowItWorks() {
               {/* Step Visual */}
               <div className="flex-1 flex justify-center">
                 <div className="relative">
-                  <div className={`w-48 h-48 md:w-64 md:h-64 rounded-full bg-gradient-to-br ${step.color} opacity-10 animate-pulse`}></div>
+                  <div className={`w-48 h-48 md:w-64 md:h-64 rounded-full bg-gradient-to-br ${step.color} opacity-10`}></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-8xl md:text-9xl animate-bounce">
+                    <div className="text-8xl md:text-9xl">
                       {step.icon}
                     </div>
                   </div>
