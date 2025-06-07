@@ -1,71 +1,74 @@
-import { useState } from 'react'
-import { useAuth } from '../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
-import PhoneVerificationModal from './PhoneVerificationModal'
+import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import PhoneVerificationModal from "./PhoneVerificationModal";
 
 interface NavigationProps {
-  transparent?: boolean
+  transparent?: boolean;
 }
 
 export default function Navigation({ transparent = false }: NavigationProps) {
-  const { user, signOut } = useAuth()
-  const navigate = useNavigate()
-  const [showVerificationModal, setShowVerificationModal] = useState(false)
-  const [showPhoneInput, setShowPhoneInput] = useState(false)
-  const [phoneNumber, setPhoneNumber] = useState('')
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [showPhoneInput, setShowPhoneInput] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleLogoClick = () => {
-    navigate('/')
-  }
+    navigate("/");
+  };
 
   const handleSignOut = async () => {
     try {
-      await signOut()
+      await signOut();
     } catch (error) {
-      console.error('Error signing out:', error)
+      console.error("Error signing out:", error);
     }
-  }
+  };
 
   const handleLoginClick = () => {
-    setShowPhoneInput(true)
-  }
+    setShowPhoneInput(true);
+  };
 
   const handleVerificationSuccess = () => {
-    setShowVerificationModal(false)
-    setShowPhoneInput(false)
-    setPhoneNumber('')
+    setShowVerificationModal(false);
+    setShowPhoneInput(false);
+    setPhoneNumber("");
     // Navigation will be handled by the app routing logic
-  }
+  };
 
   const formatPhoneNumber = (value: string) => {
     // Remove all non-digits
-    const numbers = value.replace(/\D/g, '')
-    
+    const numbers = value.replace(/\D/g, "");
+
     // Format as (XXX) XXX-XXXX
     if (numbers.length <= 3) {
-      return numbers
+      return numbers;
     } else if (numbers.length <= 6) {
-      return `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`
+      return `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`;
     } else {
-      return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`
+      return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(
+        6,
+        10
+      )}`;
     }
-  }
+  };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhoneNumber(e.target.value)
-    setPhoneNumber(formatted)
-  }
+    const formatted = formatPhoneNumber(e.target.value);
+    setPhoneNumber(formatted);
+  };
 
   const handlePhoneSubmit = () => {
     if (phoneNumber && phoneNumber.length >= 14) {
-      setShowVerificationModal(true)
-      setShowPhoneInput(false)
+      setShowVerificationModal(true);
+      setShowPhoneInput(false);
     }
-  }
+  };
 
-  const navClasses = transparent 
+  const navClasses = transparent
     ? "fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-white/20"
-    : "bg-white shadow-sm border-b border-slate-200"
+    : "bg-white shadow-sm border-b border-slate-200";
 
   return (
     <>
@@ -83,34 +86,11 @@ export default function Navigation({ transparent = false }: NavigationProps) {
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">W</span>
                 </div>
-                
+
                 <h1 className="hidden sm:block text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Wanda
                 </h1>
               </button>
-            </div>
-
-            {/* Center - Phone Number */}
-            <div className="flex items-center">
-              {/* Desktop version */}
-              <a 
-                href="tel:+18436489138" 
-                className="hidden md:inline-flex items-center px-4 py-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm border border-slate-200 hover:bg-white hover:shadow-md transition-all duration-200 group"
-              >
-                <span className="text-lg font-semibold text-blue-600 group-hover:text-blue-700">
-                  (843) 648-9138
-                </span>
-                <span className="ml-2 text-lg group-hover:animate-bounce">📱</span>
-              </a>
-              
-              {/* Mobile version */}
-              <a 
-                href="tel:+18436489138" 
-                className="md:hidden inline-flex items-center px-3 py-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm border border-slate-200 hover:bg-white hover:shadow-md transition-all duration-200 group"
-                title="Call Wanda: (843) 648-9138"
-              >
-                <span className="text-xl group-hover:animate-bounce">📱</span>
-              </a>
             </div>
 
             {/* Right side - Auth buttons */}
@@ -149,8 +129,8 @@ export default function Navigation({ transparent = false }: NavigationProps) {
                       </button>
                       <button
                         onClick={() => {
-                          setShowPhoneInput(false)
-                          setPhoneNumber('')
+                          setShowPhoneInput(false);
+                          setPhoneNumber("");
                         }}
                         className="px-3 py-2 text-slate-500 hover:text-slate-700 text-sm"
                       >
@@ -176,13 +156,13 @@ export default function Navigation({ transparent = false }: NavigationProps) {
       <PhoneVerificationModal
         isOpen={showVerificationModal}
         onClose={() => {
-          setShowVerificationModal(false)
-          setShowPhoneInput(false)
-          setPhoneNumber('')
+          setShowVerificationModal(false);
+          setShowPhoneInput(false);
+          setPhoneNumber("");
         }}
         phoneNumber={phoneNumber}
         onSuccess={handleVerificationSuccess}
       />
     </>
-  )
+  );
 }
