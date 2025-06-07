@@ -38,7 +38,7 @@ export default function Hero() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden pt-16">
       {/* Background gradient orbs */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -124,21 +124,6 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-blue-600">100+</div>
-            <div className="text-slate-600">Languages Supported</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-purple-600">24/7</div>
-            <div className="text-slate-600">Always Available</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-teal-600">0s</div>
-            <div className="text-slate-600">Setup Time</div>
-          </div>
-        </div>
       </div>
 
       {/* Phone Verification Modal */}
