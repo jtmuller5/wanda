@@ -95,19 +95,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Call to action */}
-        <div className="text-center mt-8">
-          <p className="text-slate-300 text-lg mb-4">
-            Ready to discover amazing places? Give Wanda a call!
-          </p>
-          <a 
-            href="tel:+18436489138"
-            className="inline-flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg"
-          >
-            <span>📞</span>
-            <span>Call (843) 648-9138</span>
-          </a>
-        </div>
       </div>
     </footer>
   )
