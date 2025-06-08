@@ -17,7 +17,6 @@ interface PreferenceSectionProps {
 
 function PreferenceSection({
   title,
-  type,
   color,
   emoji,
   preferences,

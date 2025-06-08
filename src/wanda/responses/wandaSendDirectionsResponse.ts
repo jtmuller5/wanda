@@ -127,7 +127,8 @@ export async function wandaSendDirections({
     // Create the text message
     const messageBody = finalPlaceAddress
       ? `Here are the directions to ${finalPlaceName}:\n\n${finalPlaceAddress}\n\nSent by Wanda 🗺️`
-      : `Here are the directions to ${finalPlaceName}:\n\n${mapsLink}\n\nSent by Wanda 🗺️`;
+      : `Here are the directions to ${finalPlaceName}:\n\n${mapsLink}\n\nSent by Wanda 🗺️\n\n
+      Manage your preferences at https://wanda-74cc9.web.app/`;
 
     // Send the SMS
     const messageInstance = await client.messages.create({
