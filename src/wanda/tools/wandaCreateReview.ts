@@ -28,7 +28,7 @@ export function wandaCreateReviewTool(
           },
           rating: {
             type: "number",
-            description: "The star rating from 1 to 5 that the caller wants to give.",
+            description: "A star rating from 1 to 5 derived from the caller's feedback.",
           },
         },
         required: ["placeId", "comment", "rating"],

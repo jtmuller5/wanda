@@ -35,9 +35,9 @@ Once connected to the caller, proceed to the Task section without any greetings 
    - Encourage specific details about what they liked or didn't like
    - Keep the comment natural and conversational
 
-3. Get their rating:
-   - Ask for a star rating from 1 to 5 stars
-   - Clarify what each rating means if needed (1 = poor, 5 = excellent)
+3. Ask them if they have any more details to add:
+   - If yes, prompt them to share additional comments
+   - If no, proceed to the next step
 
 4. Submit the review:
    - Use "wandaCreateReview" with the place ID, comment, and rating
