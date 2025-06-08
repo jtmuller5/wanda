@@ -1,7 +1,6 @@
 import { searchGoogleMaps } from "../../services/googleMaps";
-import { storeSearchResults } from "../../services/firebase";
 
-export async function wandaSearchMaps({
+export async function wandaReviewSearchMaps({
   callId,
   query,
   location,
@@ -26,8 +25,8 @@ export async function wandaSearchMaps({
       query,
       location,
       radius,
-      includeEditorialSummary: true,
-      maxResults: 3,
+      includeEditorialSummary: false, // Don't need summaries for review search
+      maxResults: 5, // Get more results for review purposes
     });
 
     if (!searchResult.success) {
@@ -39,20 +38,20 @@ export async function wandaSearchMaps({
 
     if (searchResult.results.length === 0) {
       return {
-        message: "I found no places matching your search.",
+        message: "I found no places matching your search criteria.",
         error: false,
       };
     }
 
-    // Format places with summaries for conversational response
+    // Format places with name, address, and place ID for review purposes
     const formattedPlaces = searchResult.results
       .map((place, index) => {
-        const summary = place.summary || "";
-        return `${index + 1} - ${place.name}: ${summary}`;
+        const addressPart = place.address ? ` - ${place.address}` : "";
+        return `${index + 1}. ${place.name}${addressPart}`;
       })
       .join("\n");
 
-    console.log("Formatted places:", formattedPlaces);
+    console.log("Formatted places for review:", formattedPlaces);
 
     // Convert to the format expected by existing code
     const searchResults = searchResult.results.map((place) => ({
@@ -61,26 +60,16 @@ export async function wandaSearchMaps({
       placeId: place.placeId,
     }));
 
-    // Store search results for potential directions requests
-    if (searchResults.length > 0) {
-      await storeSearchResults({
-        callId,
-        searchResults,
-      });
-    }
+    // Build response message focused on the data rather than conversation
+    let responseMessage = `Found ${searchResult.results.length} places:\n\n${formattedPlaces}`;
 
-    // Build personalized response message
-    let responseMessage = `I found the following places:\n${formattedPlaces}`;
-
-    // Add personalized context if we used profile information
+    // Add context about search enhancements
     if (searchResult.usedProfileCity) {
-      responseMessage += `\n\n(I used your saved city from your profile since you didn't specify a location)`;
+      responseMessage += `\n\n(Search used saved city from caller profile)`;
     }
     if (searchResult.usedFoodPreferences) {
-      responseMessage += `\n\n(I factored in your food preferences to find better matches)`;
+      responseMessage += `\n\n(Search enhanced with caller's food preferences)`;
     }
-
-    responseMessage += `\n\nWould you like me to send you directions to any of these places?`;
 
     return {
       message: responseMessage,
@@ -88,7 +77,7 @@ export async function wandaSearchMaps({
       searchResults,
     };
   } catch (e: any) {
-    console.error("Exception in wandaSearchMaps:", e);
+    console.error("Exception in wandaReviewSearchMaps:", e);
     return {
       message: `An unexpected error occurred: ${e.message}`,
       error: true,

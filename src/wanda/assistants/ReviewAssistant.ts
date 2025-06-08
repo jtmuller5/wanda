@@ -16,7 +16,7 @@ export const createReviewAssistant = (
   modelProvider: "google" | "openai" = "google",
   host: string
 ): Vapi.SquadMemberDto => ({
-  assistantId: "df735d66-1ad1-4fbe-8c31-a99cdc7db2d9",
+  assistantId: "9961e46d-69a6-43f5-87f5-07c2df78b68d",
   assistantOverrides: {
     model: {
       model,
