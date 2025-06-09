@@ -45,6 +45,9 @@ export const createSearchAssistant = (
             },
           ],
         },
+        {
+          type: "endCall",
+        },
       ],
       messages: [
         {

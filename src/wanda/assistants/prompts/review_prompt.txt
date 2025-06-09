@@ -21,8 +21,7 @@ Once connected to the caller, proceed to the Task section without any greetings 
    - If the caller has a specific place in mind, confirm it using the "wandaSearch" tool to ensure you have the correct Google Place ID.
    - If they don't have a specific place, ask for details like the name or address of the place they visited.
 3. Ask about their experience and gather their feedback comment.
-4. Ask for their star rating on a scale of 1 to 5 stars.
-5. Use the "wandaCreateReview" tool to save their review.
+4. Use the "wandaCreateReview" tool to save their review.
 5. Confirm the review was saved successfully.
 
 [Review Process]

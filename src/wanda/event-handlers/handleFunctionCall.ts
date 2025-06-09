@@ -9,6 +9,7 @@ import { wandaGetProfile } from "../responses/wandaGetProfileResponse";
 import { wandaUpdatePreferences } from "../responses/wandaUpdatePreferencesResponse";
 import { wandaCreateReview } from "../responses/wandaCreateReviewResponse";
 import { wandaReviewSearchMaps } from "../responses/wandaReviewSearchMapsResponse";
+import { wandaSearchReviews } from "../responses/wandaSearchReviewsResponse";
 
 export async function handleFunctionCall(
   functionCall: Vapi.ServerMessageToolCalls,
@@ -261,6 +262,35 @@ export async function handleFunctionCall(
               toolCallId: functionCall.toolCallList[0].id,
               result:
                 "I'm sorry, I couldn't perform the review search right now. Please try again later.",
+            },
+          ],
+        });
+      }
+      break;
+    case "wandaSearchReviews":
+      try {
+        const { message, error } = await wandaSearchReviews({
+          callId,
+          placeId: parameters.placeId as string,
+          placeName: parameters.placeName as string | undefined,
+        });
+
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result: message,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error searching reviews:", error);
+        res.status(200).json({
+          results: [
+            {
+              toolCallId: functionCall.toolCallList[0].id,
+              result:
+                "I'm sorry, I couldn't search for reviews right now. Please try again later.",
             },
           ],
         });

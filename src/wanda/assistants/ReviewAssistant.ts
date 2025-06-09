@@ -1,8 +1,7 @@
 import { Vapi } from "@vapi-ai/server-sdk";
 import { wandaSearchMapsTool } from "../tools/wandaSearchMaps";
-import { wandaSendDirectionsTool } from "../tools/wandaSendDirections";
-import { wandaGetPlaceDetailsTool } from "../tools/wandaGetPlaceDetails";
 import { wandaCreateReviewTool } from "../tools/wandaCreateReview";
+import { wandaSearchReviewsTool } from "../tools/wandaSearchReviews";
 import * as fs from "fs";
 import * as path from "path";
 import { SearchTransfer } from "../transfers/SearchTransfer";
@@ -25,6 +24,7 @@ export const createReviewAssistant = (
       tools: [
         wandaSearchMapsTool(host),
         wandaCreateReviewTool(host),
+        wandaSearchReviewsTool(host),
         {
           type: "transferCall",
           destinations: [
@@ -36,6 +36,9 @@ export const createReviewAssistant = (
               transferMode: "swap-system-message-in-history",
             },
           ],
+        },
+        {
+          type: "endCall",
         },
       ],
       messages: [

@@ -37,6 +37,9 @@ export const createProfileAssistant = (
             },
           ],
         },
+        {
+          type: "endCall",
+        },
       ],
       messages: [
         {
