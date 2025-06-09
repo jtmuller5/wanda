@@ -39,6 +39,12 @@ export const createReviewAssistant = (
         },
         {
           type: "endCall",
+          messages: [
+            {
+              type: "request-start",
+              content: "Have a great day! Wanda, out."
+            }
+          ]
         },
       ],
       messages: [
