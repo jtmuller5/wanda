@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts"
+    "start": "PORT=5544 node dist/index.js",
+    "dev": "PORT=5544 ts-node src/index.ts"
   },
   "keywords": [
     "vapi",

@@ -11,6 +11,17 @@ export interface WandaCaller {
   lastCalledAt?: string
 }
 
+export interface WandaVariableValues {
+  callerName?: string;
+  callerAge?: number;
+  callerCity?: string;
+  callerFoodPreferences?: string;
+  callerActivitiesPreferences?: string;
+  callerShoppingPreferences?: string;
+  callerEntertainmentPreferences?: string;
+  newCaller?: boolean;
+}
+
 export interface CallRecord {
   id: string
   callerPhoneNumber: string

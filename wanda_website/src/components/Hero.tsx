@@ -1,6 +1,8 @@
+import WebCallWidget from './WebCallWidget';
+
 export default function Hero() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden pt-16">
+    <div className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-16">
       {/* Background gradient orbs */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -23,15 +25,10 @@ export default function Hero() {
               Without Taking Your Eyes Off The Road
             </span>
           </h2>
-
-          {/* <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Call Wanda to find restaurants, shops, and activities near you. Get personalized recommendations 
-            based on your preferences, and receive directions via text - all hands-free.
-          </p> */}
         </div>
 
         {/* Call-to-action */}
-        <div className="text-center mt-16">
+        <div className="text-center mb-16">
           <div className="inline-flex items-center space-x-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
             <span className="text-2xl">📞</span>
             <span className="text-xl font-semibold">
@@ -39,6 +36,22 @@ export default function Hero() {
             </span>
           </div>
         </div>
+      </div>
+
+      {/* Web Call Widget */}
+      <div className="relative z-10 w-full max-w-4xl mx-auto mt-8">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center space-x-2 text-slate-600">
+            <div className="h-px bg-slate-300 flex-1"></div>
+            <span className="px-4 text-sm font-medium">OR TRY IT ON THE WEB</span>
+            <div className="h-px bg-slate-300 flex-1"></div>
+          </div>
+        </div>
+        
+        <WebCallWidget 
+          apiKey={import.meta.env.VITE_VAPI_PUBLIC_KEY || ''}
+          serverUrl={import.meta.env.VITE_API_URL || 'http://localhost:3000'}
+        />
       </div>
     </div>
   );
