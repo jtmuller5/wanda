@@ -33,7 +33,7 @@ export function wandaSearchMapsTool(host: string): Vapi.OpenAiModelToolsItem {
           },
           location: {
             type: "string",
-            description: "The location to search around (latitude,longitude).",
+            description: "The location to search around (e.g., 'New York, NY', 'downtown Boston', '90210').",
           },
           radius: {
             type: "number",
