@@ -45,7 +45,7 @@ export const createSearchAssistant = (
       ],
     } as OpenAIModel,
     variableValues,
-    firstMessage: "",
+    firstMessage: "I can help you with that. Do you have any other preferences?",
     firstMessageMode: "assistant-speaks-first",
   },
 });

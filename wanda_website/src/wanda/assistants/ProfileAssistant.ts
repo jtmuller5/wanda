@@ -42,7 +42,7 @@ export const createProfileAssistant = (
         },
       ],
     } as OpenAIModel,
-    firstMessage: "",
+    firstMessage: "I can help with that. What would you like to update in your profile?",
     firstMessageMode: "assistant-speaks-first",
     variableValues,
   },

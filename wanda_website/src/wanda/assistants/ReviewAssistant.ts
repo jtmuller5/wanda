@@ -44,7 +44,7 @@ export const createReviewAssistant = (
       ],
     } as OpenAIModel,
     variableValues,
-    firstMessage: "",
+    firstMessage: "I can help you with that. What place would you like to review?",
     firstMessageMode: "assistant-speaks-first",
   },
 });

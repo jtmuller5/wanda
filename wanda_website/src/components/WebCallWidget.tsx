@@ -303,9 +303,6 @@ export default function WebCallWidget({
           <div className="flex flex-col items-center justify-center space-y-6 p-8">
             {/* Status */}
             <div className="text-center mb-4">
-              <h4 className="text-lg font-semibold text-slate-800 mb-2">
-                {isSpeaking ? "Wanda is speaking..." : "Listening..."}
-              </h4>
               <div className="flex items-center justify-center space-x-1">
                 <div
                   className={`w-2 h-2 rounded-full ${
