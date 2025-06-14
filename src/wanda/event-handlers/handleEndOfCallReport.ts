@@ -50,7 +50,7 @@ export async function handleEndOfCallReport(
         message.analysis?.structuredData &&
         callData?.callerPhoneNumber
       ) {
-        const structuredData = message.call.analysis
+        const structuredData = message.analysis
           .structuredData as CallAnalysisStructuredData;
         const phoneNumberId = callData.callerPhoneNumber.replace("+1", "");
 
