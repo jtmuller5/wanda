@@ -2,12 +2,8 @@ import { Vapi } from "@vapi-ai/server-sdk";
 import { wandaSearchMapsTool } from "../tools/wandaSearchMaps";
 import { wandaCreateReviewTool } from "../tools/wandaCreateReview";
 import { wandaSearchReviewsTool } from "../tools/wandaSearchReviews";
-import * as fs from "fs";
-import * as path from "path";
 import { SearchTransfer } from "../transfers/SearchTransfer";
-
-const promptFilePath = path.join(__dirname, "./prompts/review_prompt.txt");
-const prompt = fs.readFileSync(promptFilePath, "utf-8");
+import { reviewPrompt } from "./prompts/review_prompt";
 
 export const createReviewAssistant = (
   model: string,
@@ -50,7 +46,7 @@ export const createReviewAssistant = (
       messages: [
         {
           role: "system",
-          content: prompt,
+          content: reviewPrompt,
         },
       ],
     } as Vapi.OpenAiModel,

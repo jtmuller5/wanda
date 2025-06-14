@@ -2,11 +2,7 @@ import { ProfileTransfer } from "../transfers/ProfileTransfer";
 import { SearchTransfer } from "../transfers/SearchTransfer";
 import { ReviewTransfer } from "../transfers/ReviewTransfer";
 import { Vapi } from "@vapi-ai/server-sdk";
-import * as fs from "fs";
-import * as path from "path";
-
-const promptFilePath = path.join(__dirname, "./prompts/intro_prompt.txt");
-const prompt = fs.readFileSync(promptFilePath, "utf-8");
+import { introPrompt } from "./prompts/intro_prompt";
 
 export const createIntroAssistant = (
   model: string,
@@ -21,7 +17,7 @@ export const createIntroAssistant = (
       messages: [
         {
           role: "system",
-          content: prompt,
+          content: introPrompt,
         },
       ],
       tools: [

@@ -3,11 +3,7 @@ import { SearchTransfer } from "../transfers/SearchTransfer";
 import { wandaUpdateProfileTool } from "../tools/wandaUpdateProfile";
 import { wandaGetProfileTool } from "../tools/wandaGetProfile";
 import { wandaUpdatePreferencesTool } from "../tools/wandaUpdatePreferences";
-import * as fs from "fs";
-import * as path from "path";
-
-const promptFilePath = path.join(__dirname, "./prompts/profile_prompt.txt");
-const prompt = fs.readFileSync(promptFilePath, "utf-8");
+import { profilePrompt } from "./prompts/profile_prompt";
 
 export const createProfileAssistant = (
   model: string,
@@ -50,7 +46,7 @@ export const createProfileAssistant = (
       messages: [
         {
           role: "system",
-          content: prompt,
+          content: profilePrompt,
         },
       ],
     } as Vapi.OpenAiModel,

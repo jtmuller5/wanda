@@ -4,11 +4,7 @@ import { wandaSendDirectionsTool } from "../tools/wandaSendDirections";
 import { ProfileTransfer } from "../transfers/ProfileTransfer";
 import { ReviewTransfer } from "../transfers/ReviewTransfer";
 import { wandaGetPlaceDetailsTool } from "../tools/wandaGetPlaceDetails";
-import * as fs from "fs";
-import * as path from "path";
-
-const promptFilePath = path.join(__dirname, "./prompts/search_prompt.txt");
-const prompt = fs.readFileSync(promptFilePath, "utf-8");
+import { searchPrompt } from "./prompts/search_prompt";
 
 export const createSearchAssistant = (
   model: string,
@@ -58,7 +54,7 @@ export const createSearchAssistant = (
       messages: [
         {
           role: "system",
-          content: prompt,
+          content: searchPrompt,
         },
       ],
     } as Vapi.OpenAiModel,
