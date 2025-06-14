@@ -149,6 +149,7 @@ app.post("/wanda", async (req, res) => {
               timeoutSeconds: 30,
               schema: {
                 type: "object",
+
                 properties: {
                   food_preferences: {
                     type: "array",
@@ -184,7 +185,7 @@ app.post("/wanda", async (req, res) => {
               messages: [
                 {
                   role: "system",
-                  content: "You are an expert at extracting user preferences from conversation transcripts. Analyze the call transcript and extract any preferences the caller mentioned about food, activities, shopping, or entertainment. Return empty arrays if no relevant preferences were mentioned in each category. Be specific and include dietary restrictions, cuisine types, activity types, shopping categories, and entertainment preferences. Only include preferences that were explicitly mentioned or clearly implied by the caller."
+                  content: "You are an expert at extracting user preferences from conversation transcripts. Analyze the call transcript and extract any preferences the caller mentioned about food, activities, shopping, or entertainment. Return empty arrays if no relevant preferences were mentioned in each category. Be specific and include dietary restrictions, cuisine types, activity types, shopping categories, and entertainment preferences. Only include preferences that were explicitly mentioned or clearly implied by the caller. Example: \n\nFood preferences: ['Italian', 'Vegetarian', 'Spicy food']\nActivities preferences: ['Hiking', 'Museums']\nShopping preferences: ['Antiques', 'Books']\nEntertainment preferences: ['Movies', 'Live music']"
                 },
                 {
                   role: "user",
