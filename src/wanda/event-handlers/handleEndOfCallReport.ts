@@ -1,30 +1,18 @@
+import { ServerMessageEndOfCallReport } from "@vapi-ai/server-sdk/api";
 import {
   db,
   updateCallRecordingUrl,
   updateCallerPreferencesFromCall,
 } from "../../services/firebase";
-import { VapiCall, CallAnalysisStructuredData } from "../../types";
+import {  CallAnalysisStructuredData } from "../../types";
 import { Response } from "express";
 
-interface VapiEndOfCallReportMessage {
-  type: "end-of-call-report";
-  endedReason: string;
-  call: VapiCall;
-  recordingUrl?: string;
-  summary?: string;
-  transcript?: string;
-  messages?: Array<{
-    role: "assistant" | "user";
-    message: string;
-  }>;
-}
-
 export async function handleEndOfCallReport(
-  message: VapiEndOfCallReportMessage,
+  message: any,
   res: Response
 ) {
   console.log(
-    `End of call report for call ${message.call.id}, reason: ${message.endedReason}`
+    `End of call report for call ${message.call?.id}, reason: ${message.endedReason}`
   );
 
   console.log("End of call report message:", message);
@@ -32,7 +20,7 @@ export async function handleEndOfCallReport(
   try {
     const callSnapshot = await db
       .collection("calls")
-      .doc(message.call.id)
+      .doc(message.call?.id || "")
       .get();
 
     if (callSnapshot.exists) {
@@ -59,7 +47,7 @@ export async function handleEndOfCallReport(
 
       // Process structured data to update caller preferences
       if (
-        message.call.analysis?.structuredData &&
+        message.analysis?.structuredData &&
         callData?.callerPhoneNumber
       ) {
         const structuredData = message.call.analysis

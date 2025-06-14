@@ -421,7 +421,7 @@ export default function Dashboard() {
           <div className="lg:col-span-2">
             {/* Quick Stats */}
             {callHistory.length > 0 && (
-              <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
                   <div className="text-2xl font-bold text-blue-600">
                     {callHistory.length}
