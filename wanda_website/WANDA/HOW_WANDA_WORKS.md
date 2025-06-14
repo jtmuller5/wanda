@@ -7,7 +7,7 @@ Wanda is an innovative voice-first AI assistant designed to help users discover 
 ## How Wanda Works
 
 ### 1. Voice-First Experience
-- **Phone Number**: Users call (843) 648-9138 to interact with Wanda
+- **Phone Number**: Users call (845) 388-3443 to interact with Wanda
 - **Natural Conversation**: Speak naturally about what you're looking for
 - **Hands-Free**: Perfect for use while driving or when you can't use your phone
 - **Real-Time Responses**: Immediate AI-powered assistance

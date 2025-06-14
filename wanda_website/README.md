@@ -38,6 +38,8 @@ A modern web interface for the Wanda voice-first local discovery platform.
    ```bash
    npm run dev
    ```
+5. **Deploy to GCP**
+https://cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-nodejs-service 
 
 ## Project Structure
 
@@ -77,7 +79,7 @@ The website integrates with the Wanda voice assistant backend through shared Fir
 - `callers` - User profiles and preferences
 - `calls` - Call history and transcripts
 
-When users call the Wanda phone number `(843) 648-9138`, their data is automatically synced to their web dashboard.
+When users call the Wanda phone number `(845) 388-3443`, their data is automatically synced to their web dashboard.
 
 ## Environment Variables
 

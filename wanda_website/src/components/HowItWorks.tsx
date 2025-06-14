@@ -4,7 +4,7 @@ export default function HowItWorks() {
       step: "1",
       title: "Call Wanda",
       description:
-        "Dial (843) 648-9138 from any phone. No app download or account setup required.",
+        "Dial (845) 388-3443 from any phone. No app download or account setup required.",
       icon: "📞",
       color: "from-blue-500 to-blue-600",
     },

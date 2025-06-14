@@ -32,7 +32,7 @@ export default function Hero() {
           <div className="inline-flex items-center space-x-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
             <span className="text-2xl">📞</span>
             <span className="text-xl font-semibold">
-              Ready to try? Call (843) 648-9138
+              Ready to try? Call (845) 388-3443
             </span>
           </div>
         </div>

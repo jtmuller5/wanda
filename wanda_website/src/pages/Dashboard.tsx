@@ -114,10 +114,10 @@ export default function Dashboard() {
           <p className="text-slate-600">
             Ready to discover amazing places? Call Wanda anytime at{" "}
             <a
-              href="tel:+18436489138"
+              href="tel:+18453883443"
               className="font-semibold text-blue-600 hover:text-blue-700"
             >
-              (843) 648-9138
+              (845) 388-3443
             </a>
           </p>
         </div>
@@ -548,10 +548,10 @@ export default function Dashboard() {
                     Make your first call to Wanda to get started!
                   </p>
                   <a
-                    href="tel:+18436489138"
+                    href="tel:+18453883443"
                     className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-colors"
                   >
-                    Call (843) 648-9138
+                    Call (845) 388-3443
                     <span className="ml-2">📱</span>
                   </a>
                 </div>

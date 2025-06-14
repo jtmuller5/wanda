@@ -18,10 +18,10 @@ export default function Footer() {
                 <div className="text-2xl mb-2">📞</div>
                 <p className="text-sm mb-2">Call Wanda Now</p>
                 <a 
-                  href="tel:+18436489138" 
+                  href="tel:+18453883443" 
                   className="text-2xl font-bold hover:text-blue-200 transition-colors"
                 >
-                  (843) 648-9138
+                  (845) 388-3443
                 </a>
                 <p className="text-xs mt-2 text-blue-100">Available 24/7</p>
               </div>
