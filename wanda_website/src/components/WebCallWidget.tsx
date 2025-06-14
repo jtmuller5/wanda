@@ -9,6 +9,14 @@ import type { WandaVariableValues } from "../types";
 import { loadCaller } from "../services/firebase";
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import AnimatedOrbs from "./AnimatedOrbs";
+
+interface TranscriptMessage {
+  role: string;
+  text: string;
+  id: string;
+  timestamp: number;
+}
 
 interface WebCallWidgetProps {
   apiKey: string;
@@ -19,15 +27,16 @@ export default function WebCallWidget({
   apiKey,
   serverUrl,
 }: WebCallWidgetProps) {
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState(() => {
+    return localStorage.getItem('wandaPhoneNumber') || "";
+  });
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [transcript, setTranscript] = useState<
-    Array<{ role: string; text: string }>
-  >([]);
+  const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
   const vapiRef = useRef<Vapi | null>(null);
+  const transcriptProcessed = useRef(new Set<string>());
 
   useEffect(() => {
     // Initialize Vapi instance
@@ -60,14 +69,23 @@ export default function WebCallWidget({
       });
 
       vapi.on("message", (message) => {
-        if (message.type === "transcript") {
-          setTranscript((prev) => [
-            ...prev,
-            {
-              role: message.role,
-              text: message.transcript,
-            },
-          ]);
+        if (message.type === "transcript" && message.transcriptType === "final") {
+          const messageId = `${message.role}-${message.transcript}-${Date.now()}`;
+          
+          // Only add if we haven't processed this exact transcript
+          if (!transcriptProcessed.current.has(messageId)) {
+            transcriptProcessed.current.add(messageId);
+            
+            setTranscript((prev) => [
+              ...prev,
+              {
+                role: message.role,
+                text: message.transcript,
+                id: messageId,
+                timestamp: Date.now(),
+              },
+            ]);
+          }
         }
       });
 
@@ -107,6 +125,7 @@ export default function WebCallWidget({
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
     setPhoneNumber(formatted);
+    localStorage.setItem('wandaPhoneNumber', formatted);
   };
 
   const startCall = async () => {
@@ -210,11 +229,13 @@ export default function WebCallWidget({
     if (vapiRef.current) {
       vapiRef.current.stop();
     }
+    // Clear processed transcript IDs for next call
+    transcriptProcessed.current.clear();
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/50 max-w-lg mx-auto my-16">
-      <div className="text-center mb-6">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/50 max-w-6xl mx-auto my-16">
+      <div className="text-center mb-8">
         <div className="text-4xl mb-4">🌐</div>
         <h3 className="text-2xl font-bold text-slate-800 mb-2">
           Try Wanda on the Web
@@ -225,7 +246,7 @@ export default function WebCallWidget({
       </div>
 
       {!isConnected ? (
-        <div className="space-y-4">
+        <div className="max-w-md mx-auto space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Your Phone Number
@@ -277,66 +298,97 @@ export default function WebCallWidget({
           )}
         </div>
       ) : (
-        <div className="space-y-4">
-          {/* Call Status */}
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <div
-                className={`w-3 h-3 rounded-full ${
-                  isSpeaking ? "bg-red-500 animate-pulse" : "bg-green-500"
-                }`}
-              ></div>
-              <span className="font-medium text-slate-700">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left side - Visual Audio Representation */}
+          <div className="flex flex-col items-center justify-center space-y-6 p-8">
+            {/* Status */}
+            <div className="text-center mb-4">
+              <h4 className="text-lg font-semibold text-slate-800 mb-2">
                 {isSpeaking ? "Wanda is speaking..." : "Listening..."}
-              </span>
+              </h4>
+              <div className="flex items-center justify-center space-x-1">
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    isSpeaking ? "bg-red-500" : "bg-green-500"
+                  }`}
+                ></div>
+                <span className="text-sm text-slate-600">
+                  {isSpeaking ? "Speaking" : "Listening"}
+                </span>
+              </div>
             </div>
+
+            {/* Animated Orbs */}
+            <AnimatedOrbs isSpeaking={isSpeaking} />
+
+            {/* Call Duration */}
+
+            {/* End Call Button */}
+            <button
+              onClick={endCall}
+              className="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
+              End Call
+            </button>
           </div>
 
-          {/* Transcript */}
-          <div className="bg-slate-50 rounded-lg p-4 max-h-64 overflow-y-auto">
-            {transcript.length === 0 ? (
-              <p className="text-slate-500 text-center text-sm">
-                Your conversation will appear here...
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {transcript.slice(-6).map((msg, index) => (
-                  <div
-                    key={index}
-                    className={`${
-                      msg.role === "user" ? "text-right" : "text-left"
-                    }`}
-                  >
+          {/* Right side - Live Transcript */}
+          <div className="flex flex-col h-96">
+            <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+              <span className="mr-2">💬</span>
+              Live Transcript
+            </h4>
+            
+            <div className="flex-1 bg-slate-50 rounded-lg p-4 overflow-y-auto border border-slate-200">
+              {transcript.length === 0 ? (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-slate-500 text-center text-sm">
+                    Your conversation will appear here...
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {transcript.map((msg) => (
                     <div
-                      className={`inline-block max-w-[80%] p-3 rounded-lg text-sm ${
-                        msg.role === "user"
-                          ? "bg-blue-600 text-white"
-                          : "bg-white text-slate-800 border border-slate-200"
+                      key={msg.id}
+                      className={`flex ${
+                        msg.role === "user" ? "justify-end" : "justify-start"
                       }`}
                     >
-                      {msg.text}
+                      <div className="flex items-start space-x-2 max-w-[85%]">
+                        {msg.role !== "user" && (
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold mt-1 flex-shrink-0">
+                            W
+                          </div>
+                        )}
+                        <div
+                          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                            msg.role === "user"
+                              ? "bg-blue-600 text-white rounded-br-sm"
+                              : "bg-white text-slate-800 border border-slate-200 rounded-bl-sm shadow-sm"
+                          }`}
+                        >
+                          {msg.text}
+                        </div>
+                        {msg.role === "user" && (
+                          <div className="w-8 h-8 rounded-full bg-slate-400 flex items-center justify-center text-white text-xs font-bold mt-1 flex-shrink-0">
+                            Y
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-
-          {/* End Call Button */}
-          <button
-            onClick={endCall}
-            className="w-full px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
-          >
-            End Call
-          </button>
         </div>
       )}
 
       {/* Info */}
-      <div className="mt-6 text-center">
+      <div className="mt-8 text-center">
         <p className="text-xs text-slate-500">
-          This demo uses your browser's microphone. Allow microphone access when
-          prompted.
+          This demo uses your browser's microphone. Allow microphone access when prompted.
         </p>
       </div>
     </div>

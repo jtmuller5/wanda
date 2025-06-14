@@ -42,6 +42,7 @@ export const createProfileAssistant = (
         },
       ],
     } as OpenAIModel,
+    firstMessage: "",
     firstMessageMode: "assistant-speaks-first",
     variableValues,
   },
