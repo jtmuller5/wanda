@@ -52,30 +52,37 @@ export async function handleEndOfCallReport(message: any, res: Response) {
           structuredData
         );
 
+        // Helper function to find preference field by name pattern
+        const findPreferenceField = (data: any, preferenceType: string): string[] => {
+          // First try exact matches
+          const exactMatches = [
+            `${preferenceType}_preferences`,
+            `${preferenceType}Preferences`,
+            preferenceType
+          ];
+          
+          for (const field of exactMatches) {
+            if (data[field] && Array.isArray(data[field])) {
+              return data[field];
+            }
+          }
+          
+          // If no exact match, find first field containing the preference type
+          const keys = Object.keys(data);
+          const matchingKey = keys.find(key => 
+            key.toLowerCase().includes(preferenceType.toLowerCase()) &&
+            Array.isArray(data[key])
+          );
+          
+          return matchingKey ? data[matchingKey] : [];
+        };
+
         // Only update if there's meaningful data (at least one non-empty array)
-
-        const foodPreferences =
-          structuredData.food_preferences ||
-          structuredData.foodPreferences ||
-          structuredData.food ||
-          [];
-
-        const activityPreferences =
-          structuredData.activity_preferences ||
-          structuredData.activityPreferences ||
-          structuredData.activities ||
-          [];
-
-        const shoppingPreferences =
-          structuredData.shopping_preferences ||
-          structuredData.shoppingPreferences ||
-          structuredData.shopping ||
-          [];
-        const entertainmentPreferences =
-          structuredData.entertainment_preferences ||
-          structuredData.entertainmentPreferences ||
-          structuredData.entertainment ||
-          [];
+        const foodPreferences = findPreferenceField(structuredData, 'food');
+        const activityPreferences = findPreferenceField(structuredData, 'activity') || 
+                                   findPreferenceField(structuredData, 'activities');
+        const shoppingPreferences = findPreferenceField(structuredData, 'shopping');
+        const entertainmentPreferences = findPreferenceField(structuredData, 'entertainment');
 
         const hasNewPreferences =
           (foodPreferences && foodPreferences.length > 0) ||
