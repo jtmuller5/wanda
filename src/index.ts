@@ -16,7 +16,7 @@ import { Vapi } from "@vapi-ai/server-sdk";
 
 // Create Express application
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 // Middleware for parsing JSON and urlencoded form data
 app.use(express.json());
