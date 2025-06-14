@@ -8,9 +8,9 @@ export default function Hero() {
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
 
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
+      <div className="relative z-10 max-w-4xl mx-auto text-center my-52">
         {/* Logo/Brand */}
-        <div className="mb-4">
+        <div className="mb-4 ">
           <p className="text-base md:text-base text-slate-600 mt-2 font-light tracking-wide">
             Your Voice-First Local Discovery Companion
           </p>

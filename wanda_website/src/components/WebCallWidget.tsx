@@ -12,12 +12,12 @@ import { db } from "../lib/firebase";
 
 interface WebCallWidgetProps {
   apiKey: string;
-  serverUrl?: string;
+  serverUrl: string;
 }
 
 export default function WebCallWidget({
   apiKey,
-  serverUrl = "https://localhost:5544/wanda-web",
+  serverUrl,
 }: WebCallWidgetProps) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isConnected, setIsConnected] = useState(false);
@@ -213,7 +213,7 @@ export default function WebCallWidget({
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/50 max-w-lg mx-auto">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/50 max-w-lg mx-auto my-16">
       <div className="text-center mb-6">
         <div className="text-4xl mb-4">🌐</div>
         <h3 className="text-2xl font-bold text-slate-800 mb-2">
