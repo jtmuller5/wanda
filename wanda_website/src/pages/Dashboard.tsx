@@ -419,6 +419,42 @@ export default function Dashboard() {
 
           {/* Call History */}
           <div className="lg:col-span-2">
+            {/* Quick Stats */}
+            {callHistory.length > 0 && (
+              <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {callHistory.length}
+                  </div>
+                  <div className="text-sm text-slate-600">Total Calls</div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
+                  <div className="text-2xl font-bold text-green-600">
+                    {callHistory.filter((call) => call.directionsSent).length}
+                  </div>
+                  <div className="text-sm text-slate-600">Directions Sent</div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {
+                      callHistory.filter(
+                        (call) => call.lastSearchResults?.length
+                      ).length
+                    }
+                  </div>
+                  <div className="text-sm text-slate-600">Places Searched</div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {getPreferenceCount()}
+                  </div>
+                  <div className="text-sm text-slate-600">Preferences</div>
+                </div>
+              </div>
+            )}
             <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
               <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
                 <span className="mr-2">📞</span>
@@ -522,42 +558,7 @@ export default function Dashboard() {
               )}
             </div>
 
-            {/* Quick Stats */}
-            {callHistory.length > 0 && (
-              <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {callHistory.length}
-                  </div>
-                  <div className="text-sm text-slate-600">Total Calls</div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
-                  <div className="text-2xl font-bold text-green-600">
-                    {callHistory.filter((call) => call.directionsSent).length}
-                  </div>
-                  <div className="text-sm text-slate-600">Directions Sent</div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {
-                      callHistory.filter(
-                        (call) => call.lastSearchResults?.length
-                      ).length
-                    }
-                  </div>
-                  <div className="text-sm text-slate-600">Places Searched</div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
-                  <div className="text-2xl font-bold text-yellow-600">
-                    {getPreferenceCount()}
-                  </div>
-                  <div className="text-sm text-slate-600">Preferences</div>
-                </div>
-              </div>
-            )}
+            
           </div>
         </div>
       </div>
