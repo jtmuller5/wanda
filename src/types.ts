@@ -255,17 +255,14 @@ export interface VapiCall {
     content: string;
     timestamp: number;
   }[];
-  analysis?: {
-    structuredData?: CallAnalysisStructuredData;
-  };
 }
 
-export interface CallAnalysisStructuredData {
+/* export interface CallAnalysisStructuredData {
   food_preferences: string[];
   activity_preferences: string[];
   shopping_preferences: string[];
   entertainment_preferences: string[];
-}
+} */
 
 export interface WandaReview {
   placeId: string;

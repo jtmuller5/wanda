@@ -4,13 +4,10 @@ import {
   updateCallRecordingUrl,
   updateCallerPreferencesFromCall,
 } from "../../services/firebase";
-import {  CallAnalysisStructuredData } from "../../types";
+//import {  CallAnalysisStructuredData } from "../../types";
 import { Response } from "express";
 
-export async function handleEndOfCallReport(
-  message: any,
-  res: Response
-) {
+export async function handleEndOfCallReport(message: any, res: Response) {
   console.log(
     `End of call report for call ${message.call?.id}, reason: ${message.endedReason}`
   );
@@ -46,12 +43,8 @@ export async function handleEndOfCallReport(
       }
 
       // Process structured data to update caller preferences
-      if (
-        message.analysis?.structuredData &&
-        callData?.callerPhoneNumber
-      ) {
-        const structuredData = message.analysis
-          .structuredData as CallAnalysisStructuredData;
+      if (message.analysis?.structuredData && callData?.callerPhoneNumber) {
+        const structuredData = message.analysis.structuredData;
         const phoneNumberId = callData.callerPhoneNumber.replace("+1", "");
 
         console.log(
@@ -60,26 +53,45 @@ export async function handleEndOfCallReport(
         );
 
         // Only update if there's meaningful data (at least one non-empty array)
+
+        const foodPreferences =
+          structuredData.food_preferences ||
+          structuredData.foodPreferences ||
+          structuredData.food ||
+          [];
+
+        const activityPreferences =
+          structuredData.activity_preferences ||
+          structuredData.activityPreferences ||
+          structuredData.activities ||
+          [];
+
+        const shoppingPreferences =
+          structuredData.shopping_preferences ||
+          structuredData.shoppingPreferences ||
+          structuredData.shopping ||
+          [];
+        const entertainmentPreferences =
+          structuredData.entertainment_preferences ||
+          structuredData.entertainmentPreferences ||
+          structuredData.entertainment ||
+          [];
+
         const hasNewPreferences =
-          (structuredData.food_preferences &&
-            structuredData.food_preferences.length > 0) ||
-          (structuredData.activity_preferences &&
-            structuredData.activity_preferences.length > 0) ||
-          (structuredData.shopping_preferences &&
-            structuredData.shopping_preferences.length > 0) ||
-          (structuredData.entertainment_preferences &&
-            structuredData.entertainment_preferences.length > 0);
+          (foodPreferences && foodPreferences.length > 0) ||
+          (activityPreferences && activityPreferences.length > 0) ||
+          (shoppingPreferences && shoppingPreferences.length > 0) ||
+          (entertainmentPreferences && entertainmentPreferences.length > 0);
 
         if (hasNewPreferences) {
           try {
             await updateCallerPreferencesFromCall({
               phoneNumber: phoneNumberId,
               preferences: {
-                foodPreferences: structuredData.food_preferences,
-                activitiesPreferences: structuredData.activity_preferences,
-                shoppingPreferences: structuredData.shopping_preferences,
-                entertainmentPreferences:
-                  structuredData.entertainment_preferences,
+                foodPreferences,
+                activitiesPreferences: activityPreferences,
+                shoppingPreferences,
+                entertainmentPreferences,
               },
             });
 
